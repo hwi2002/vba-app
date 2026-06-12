@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# 1. 페이지 초기 설정 및 와이드 레이아웃 구성
+# 1. 시스템 초기 설정
 st.set_page_config(
     page_title="AI Agent Briefing", 
     page_icon="📝", 
@@ -9,180 +9,38 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. 가독성과 고대비 시인성을 극대화한 커스텀 스타일시트
-st.markdown("""
-    <style>
-    @import url('https://googleapis.com');
-    
-    .main .block-container {
-        font-family: 'Noto Sans KR', sans-serif !important;
-        padding-top: 2.5rem;
-        padding-bottom: 5rem;
-        max-width: 950px;
-        background-color: #FFFFFF;
-    }
-    .title-area {
-        text-align: left;
-        border-bottom: 3px solid #111111;
-        padding-bottom: 16px;
-        margin-bottom: 35px;
-    }
-    .main-title {
-        font-size: 32px !important;
-        font-weight: 900 !important;
-        color: #111111;
-        line-height: 1.2;
-    }
-    .main-subtitle {
-        font-size: 15px;
-        color: #555555;
-        margin-top: 6px;
-        font-weight: 500;
-    }
-    .summary-container {
-        background-color: #F8FAFC;
-        border: 2px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 26px;
-        margin-bottom: 45px;
-    }
-    .summary-heading {
-        font-size: 18px;
-        font-weight: 700;
-        color: #1E40AF;
-        margin-bottom: 16px;
-    }
-    .summary-bullet {
-        font-size: 15.5px;
-        color: #334155;
-        line-height: 1.7;
-        margin-bottom: 12px;
-    }
-    .summary-bullet:last-child {
-        margin-bottom: 0;
-    }
-    .content-box {
-        background-color: #FFFFFF;
-        border: 1px solid #D1D5DB;
-        border-radius: 12px;
-        padding: 26px;
-        margin-bottom: 24px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-    }
-    .content-meta {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 12px;
-    }
-    .lbl-category {
-        font-size: 11.5px;
-        font-weight: 700;
-        color: #166534;
-        background-color: #DCFCE7;
-        padding: 4px 10px;
-        border-radius: 6px;
-    }
-    .lbl-source {
-        font-size: 13px;
-        font-weight: 600;
-        color: #4B5563;
-    }
-    .lbl-time {
-        font-size: 13px;
-        color: #9CA3AF;
-    }
-    .content-title {
-        font-size: 21px;
-        font-weight: 700;
-        color: #111111;
-        margin-top: 6px;
-        margin-bottom: 12px;
-        line-height: 1.4;
-    }
-    .content-body {
-        color: #374151;
-        font-size: 15px;
-        line-height: 1.65;
-        margin-bottom: 18px;
-    }
-    .insight-sticker {
-        background-color: #FFFDF0;
-        border-left: 4px solid #EAB308;
-        padding: 14px 16px;
-        font-size: 14px;
-        color: #1E293B;
-        border-radius: 4px;
-        margin-bottom: 18px;
-        line-height: 1.5;
-    }
-    .btn-redirect {
-        display: inline-block;
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #FFFFFF !important;
-        background-color: #2563EB;
-        padding: 8px 16px;
-        border-radius: 6px;
-        text-decoration: none !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# 2. 고대비 시인성 스타일시트 주입
+st.markdown("<style>.main .block-container { font-family: 'sans-serif'; padding-top: 2.5rem; max-width: 900px; background-color: #FFFFFF; } .title-area { border-bottom: 3px solid #111111; padding-bottom: 16px; margin-bottom: 35px; } .summary-container { background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 22px; margin-bottom: 45px; } .content-box { background-color: #FFFFFF; border: 1px solid #D1D5DB; border-radius: 12px; padding: 24px; margin-bottom: 24px; } .lbl-category { font-size: 12px; font-weight: 700; color: #166534; background-color: #DCFCE7; padding: 4px 10px; border-radius: 6px; } .insight-sticker { background-color: #FFFDF0; border-left: 4px solid #EAB308; padding: 14px 16px; font-size: 14px; border-radius: 4px; margin-bottom: 18px; }</style>", unsafe_allow_html=True)
 
-# 3. 상단 헤더
-st.markdown("""
-    <div class='title-area'>
-        <div class='main-title'>AI 에이전트 브리핑</div>
-        <div class='main-subtitle'>글로벌 최신 동향과 현업 인사이트</div>
-    </div>
-""", unsafe_allow_html=True)
+# 3. 헤더 영역
+st.markdown("<div class='title-area'><h1 style='font-size:32px; font-weight:900; color:#111111; margin:0;'>AI 에이전트 브리핑</h1><p style='font-size:15px; color:#555555; margin-top:6px;'>글로벌 최신 동향과 현업 인사이트</p></div>", unsafe_allow_html=True)
 
-# 4. 사이드바 컨트롤러 (중복 충돌 방지 고유 key값 지정)
+# 4. 사이드바 컨트롤러
 st.sidebar.markdown("### 🔍 검색 및 필터")
-query_input = st.sidebar.text_input("키워드 검색", "", placeholder="검색어를 입력하세요...", key="search_bar_unique")
+query_input = st.sidebar.text_input("키워드 검색", "", placeholder="검색어를 입력하세요...", key="search_bar")
 category_filter = st.sidebar.selectbox(
     "기술 분류 선택",
     ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"],
-    key="select_box_unique"
+    key="select_box"
 )
 
 st.sidebar.markdown("---")
 with st.sidebar:
-    if st.button("🔄 실시간 동기화", use_container_width=True, key="btn_sync_unique"):
+    if st.button("🔄 실시간 동기화", use_container_width=True, key="btn_sync"):
         with st.spinner("업데이트 중..."):
             time.sleep(0.5)
         st.toast("동향 리포트가 최신화되었습니다.", icon="✅")
 
 # 5. 카테고리별 요약 문구 데이터
 summary_data = {
-    "전체 보기": """
-        <div class='summary-bullet'>🔹 <b>비즈니스 패러다임 전환:</b> AI 시장이 단순 질문-답변을 넘어 복잡한 목표를 스스로 판단 및 완결하는 '자율형 에이전트' 체제로 진화했습니다.</div>
-        <div class='summary-bullet'>🔹 <b>레거시 자동화의 대체:</b> 고정된 구조로 구동되어 UI 변화에 취약하던 기존의 매크로(VBA), RPA 인프라가 유연한 인공지능 기반의 아키텍처로 대체되고 있습니다.</div>
-        <div class='summary-bullet'>🔹 <b>오케스트레이션의 표준화:</b> 거대한 단일 모델을 구동하는 대신 전문 태스크를 가진 소형 독립 에이전트 다수를 묶어 협업시키는 멀티 에이전트 모델이 주류로 안착했습니다.</div>
-    """,
-    "🛠️ 오픈소스 에이전트 프레임워크": """
-        <div class='summary-bullet'>🔹 <b>다중 모듈 연동 체계 수립:</b> 개별 에이전트의 페르소나를 정의하고 행동 파이프라인을 체계적으로 제어할 수 있는 오픈소스 개발 프레임워크 경쟁이 치열합니다.</div>
-        <div class='summary-bullet'>🔹 <b>메모리 유실 오류 최소화:</b> 상호 대화 과정에서 정보가 손실되던 메모리 레이어를 독립형 데이터베이스와 바인딩하여 복잡한 실무 컨텍스트 유지력을 강화했습니다.</div>
-        <div class='summary-bullet'>🔹 <b>개발 주기 단축 체감:</b> 코어 아키텍처가 프레임워크 단위로 표준화되면서 업무 에이전트 빌드를 위한 현업 엔지니어의 코딩 분량이 40% 이상 감소했습니다.</div>
-    """,
-    "🏢 기업 업무 자동화 에이전트": """
-        <div class='summary-bullet'>🔹 <b>전사 시스템 직접 제어:</b> 단순 사내 문서를 요약 및 검색하여 띄우던 초기 모델을 넘어 내부 ERP, CRM 등 주요 레거시 시스템의 데이터 처리 권한을 위임받는 수준에 이르렀습니다.</div>
-        <div class='summary-bullet'>🔹 <b>자율 예외 분기 처리:</b> 알 수 없는 비즈니스 조건이나 에러 발생 시 멈추는 매크로와 달리 AI가 원인을 스스로 판단하고 정정하여 태스크를 지속 완결합니다.</div>
-        <div class='summary-bullet'>🔹 <b>데스크톱 자동화 확장:</b> 이메일 수신부터 발주서 생성, 회계 보고서 자동 취합 및 결제 시스템 상신까지 전사 도구를 유기적으로 묶는 강력한 자동화가 도입되고 있습니다.</div>
-    """,
-    "🖥️ 자율형 웹/OS 브라우징 에이전트": """
-        <div class='summary-bullet'>🔹 <b>비정형 시각 인지 인터페이스:</b> 전용 API 접근 권한이 전무한 구형 시스템이라도 모니터 화면 자체를 비전 모델로 분석하여 인간과 똑같이 마우스와 키보드를 조작합니다.</div>
-        <div class='summary-bullet'>🔹 <b>동적 웹 구조 복구 안정성:</b> 웹페이지 배치가 임의로 변경되면 정지하던 스크래퍼 방식과 달리 상황에 유연하게 대처하여 올바른 경로를 자율적으로 재탐색합니다.</div>
-        <div class='summary-bullet'>🔹 <b>가상 디지털 노동력 확보:</b> 앤드로픽의 크롬/OS 제어 기술을 시작으로 가상 데스크톱 내 단순 반복 사무 처리를 인간의 감독하에 완전 전가할 수 있는 기술적 토대가 완성되었습니다.</div>
-    """
+    "전체 보기": "🔹 <b>비즈니스 패러다임 전환:</b> AI 시장이 단순 질문-답변을 넘어 복잡한 목표를 스스로 판단 및 완결하는 '자율형 에이전트' 체제로 진화했습니다.<br><br>🔹 <b>레거시 자동화의 대체:</b> 고정된 구조로 구동되어 UI 변화에 취약하던 기존의 매크로(VBA), RPA 인프라가 유연한 인공지능 기반의 아키텍처로 대체되고 있습니다.<br><br>🔹 <b>오케스트레이션의 표준화:</b> 거대한 단일 모델을 구동하는 대신 전문 태스크를 가진 소형 독립 에이전트 다수를 묶어 협업시키는 멀티 에이전트 모델이 주류로 안착했습니다.",
+    "🛠️ 오픈소스 에이전트 프레임워크": "🔹 <b>다중 모듈 연동 체계 수립:</b> 개별 에이전트의 페르소나를 정의하고 행동 파이프라인을 제어할 수 있는 오픈소스 개발 프레임워크 경쟁이 치열합니다.<br><br>🔹 <b>메모리 유실 오류 최소화:</b> 상호 대화 과정에서 정보가 손실되던 메모리 레이어를 독립형 데이터베이스와 바인딩하여 복잡한 실무 컨텍스트 유지력을 강화했습니다.<br><br>🔹 <b>개발 주기 단축 체감:</b> 코어 아키텍처가 프레임워크 단위로 표준화되면서 업무 에이전트 빌드를 위한 현업 엔지니어의 코딩 분량이 40% 이상 감소했습니다.",
+    "🏢 기업 업무 자동화 에이전트": "🔹 <b>전사 시스템 직접 제어:</b> 단순 사내 문서를 요약 및 검색하여 띄우던 초기 모델을 넘어 내부 ERP, CRM 등 주요 레거시 시스템의 데이터 처리 권한을 위임받는 수준에 이르렀습니다.<br><br>🔹 <b>자율 예외 분기 처리:</b> 알 수 없는 비즈니스 조건이나 에러 발생 시 멈추는 매크로와 달리 AI가 원인을 스스로 판단하고 정정하여 태스크를 지속 완결합니다.<br><br>🔹 <b>데스크톱 자동화 확장:</b> 이메일 수신부터 발주서 생성, 회계 보고서 자동 취합 및 결제 시스템 상신까지 전사 도구를 유기적으로 묶는 강력한 자동화가 도입되고 있습니다.",
+    "🖥️ 자율형 웹/OS 브라우징 에이전트": "🔹 <b>비정형 시각 인지 인터페이스:</b> 전용 API 접근 권한이 전무한 구형 시스템이라도 모니터 화면 자체를 비전 모델로 분석하여 인간과 똑같이 마우스와 키보드를 조작합니다.<br><br>🔹 <b>동적 웹 구조 복구 안정성:</b> 웹페이지 배치가 임의로 변경되면 정지하던 스크래퍼 방식과 달리 상황에 유연하게 대처하여 올바른 경로를 자율적으로 재탐색합니다.<br><br>🔹 <b>가상 디지털 노동력 확보:</b> 앤드로픽의 크롬/OS 제어 기술을 시작으로 가상 데스크톱 내 단순 반복 사무 처리를 인간의 감독하에 완전 전가할 수 있는 기술적 토대가 완성되었습니다."
 }
 
-st.markdown(f"""
-    <div class='summary-container'>
-        <div class='summary-heading'>📢 {category_filter} 핵심 요약 및 현업 리포트</div>
-        {summary_data[category_filter]}
-    </div>
-""", unsafe_allow_html=True)
+# 상단 요약 출력
+st.markdown("<div class='summary-container'><div style='font-size:18px; font-weight:700; color:#1E40AF; margin-bottom:14px;'>📢 " + category_filter + " 핵심 요약 및 현업 리포트</div><div>" + summary_data[category_filter] + "</div></div>", unsafe_allow_html=True)
 
 # 6. 상세 뉴스 데이터셋
 news_repository = [
@@ -242,7 +100,7 @@ news_repository = [
     }
 ]
 
-# 7. 하단 상세 카드 리스트 렌더링 파트
+# 7. 하단 상세 카드 리스트 출력
 content_found = False
 
 for item in news_repository:
@@ -253,15 +111,7 @@ for item in news_repository:
     
     if is_category_valid and is_keyword_valid:
         content_found = True
-        st.markdown(f"""
-            <div class='content-box'>
-                <div class='content-meta'>
-                    <span class='lbl-category'>{item['category']}</span>
-                    <span class='lbl-source'>🌐 {item['source']}</span>
-                    <span class='lbl-time'>{item['time']}</span>
-                </div>
-                <div class='content-title'>{item['title']}</div>
-                <div class='content-body'>{item['content']}</div>
-                <div class='insight-sticker'>
-                    📌 <b>현업 매니저 분석 :</b> {item['insight']}
-                </div>
+        st.markdown("<div class='content-box'><div class='content-meta'><span class='lbl-category'>" + item['category'] + "</span><span class='lbl-source'>🌐 " + item['source'] + "</span><span class='lbl-time'>" + item['time'] + "</span></div><h3 style='font-size:21px; font-weight:700; color:#111; margin:10px 0;'>" + item['title'] + "</h3><p style='color:#374151; font-size:15px; line-height:1.65;'>" + item['content'] + "</p><div class='insight-sticker'>📌 <b>현업 매니저 분석 :</b> " + item['insight'] + "</div><div style='margin-top:15px;'><a href='" + item['url'] + "' target='_blank' style='display:inline-block; font-size:13.5px; font-weight:700; color:#FFFFFF !important; background-color:#2563EB; padding:8px 16px; border-radius:6px; text-decoration:none;'>🔗 출처 원문 보기</a></div></div>", unsafe_allow_html=True)
+
+if not content_found:
+    st.info("검색 조건에 맞는 데이터가 존재하지 않습니다.")
