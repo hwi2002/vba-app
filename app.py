@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# 1. 시스템 초기 설정 및 와이드 레이아웃 구성
+# [교정 ①] 페이지 설정 오작동 방지를 위해 스크립트 최상단 고정
 st.set_page_config(
     page_title="AI Agent Briefing", 
     page_icon="📝", 
@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. 가독성과 고대비 시인성을 극대화한 커스텀 스타일시트
+# [교정 ②] HTML 마크다운 꼬임 방지를 위한 스타일 시트 일괄 정돈
 st.markdown("""
     <style>
     @import url('https://googleapis.com');
@@ -21,8 +21,6 @@ st.markdown("""
         max-width: 950px;
         background-color: #FFFFFF;
     }
-    
-    /* 담백하고 명확한 상단 타이틀 구역 */
     .title-area {
         text-align: left;
         border-bottom: 3px solid #111111;
@@ -41,8 +39,6 @@ st.markdown("""
         margin-top: 6px;
         font-weight: 500;
     }
-    
-    /* 상단 요약본 전용 UI */
     .summary-container {
         background-color: #F8FAFC;
         border: 2px solid #E2E8F0;
@@ -65,8 +61,6 @@ st.markdown("""
     .summary-bullet:last-child {
         margin-bottom: 0;
     }
-    
-    /* 하단 상세 카드 전용 UI */
     .content-box {
         background-color: #FFFFFF;
         border: 1px solid #D1D5DB;
@@ -112,8 +106,6 @@ st.markdown("""
         line-height: 1.65;
         margin-bottom: 18px;
     }
-    
-    /* 카드 하단 분석 요약 */
     .insight-sticker {
         background-color: #FFFDF0;
         border-left: 4px solid #EAB308;
@@ -124,7 +116,6 @@ st.markdown("""
         margin-bottom: 18px;
         line-height: 1.5;
     }
-    
     .btn-redirect {
         display: inline-block;
         font-size: 13.5px;
@@ -135,13 +126,10 @@ st.markdown("""
         border-radius: 6px;
         text-decoration: none !important;
     }
-    .btn-redirect:hover {
-        background-color: #1D4ED8;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. 군더더기 없는 헤더 배치
+# 3. 상단 헤더
 st.markdown("""
     <div class='title-area'>
         <div class='main-title'>AI 에이전트 브리핑</div>
@@ -149,22 +137,23 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. 사이드바 컨트롤러
+# 4. 사이드바 컨트롤러 ([교정 ③] 중복 충돌을 원천 차단하기 위해 고유 key값 지정)
 st.sidebar.markdown("### 🔍 검색 및 필터")
-query_input = st.sidebar.text_input("키워드 검색", "", placeholder="검색어를 입력하세요...")
+query_input = st.sidebar.text_input("키워드 검색", "", placeholder="검색어를 입력하세요...", key="search_bar_unique")
 category_filter = st.sidebar.selectbox(
     "기술 분류 선택",
-    ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"]
+    ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"],
+    key="select_box_unique"
 )
 
 st.sidebar.markdown("---")
 with st.sidebar:
-    if st.button("🔄 실시간 동기화", use_container_width=True):
+    if st.button("🔄 실시간 동기화", use_container_width=True, key="btn_sync_unique"):
         with st.spinner("업데이트 중..."):
-            time.sleep(1)
+            time.sleep(0.5)
         st.toast("동향 리포트가 최신화되었습니다.", icon="✅")
 
-# 5. 카테고리별 요약 문구
+# 5. 카테고리별 요약 문구 데이터
 summary_data = {
     "전체 보기": """
         <div class='summary-bullet'>🔹 <b>비즈니스 패러다임 전환:</b> AI 시장이 단순 질문-답변을 넘어 복잡한 목표를 스스로 판단 및 완결하는 '자율형 에이전트' 체제로 진화했습니다.</div>
