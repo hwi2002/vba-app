@@ -1,6 +1,5 @@
 import streamlit as st
 import time
-from collections import Counter
 from datetime import datetime, timedelta, timezone
 
 
@@ -9,7 +8,7 @@ IS_SAMPLE_DATA = True
 
 
 st.set_page_config(
-    page_title="AI Agent Briefing",
+    page_title="AI Agent 기술 트렌드",
     page_icon="🧭",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -24,26 +23,79 @@ CATEGORIES = [
     "🖥️ 자율형 웹/OS 브라우징 에이전트",
 ]
 
-SUMMARY_DATA = {
+
+REPORT_SUMMARY = {
     CATEGORY_ALL: [
-        "AI Agent 시장은 단순 질의응답형 챗봇에서 벗어나, 목표를 이해하고 여러 도구를 호출하며 업무 단계를 이어가는 실행형 구조로 이동하고 있습니다.",
-        "기업 적용 관점에서는 RAG, 도구 호출, 권한 관리, 평가 체계, 운영 모니터링이 함께 묶여야 실제 업무 자동화로 이어집니다.",
-        "최근 구조 설계의 핵심은 하나의 거대한 에이전트가 모든 일을 처리하는 방식보다, 역할이 분리된 여러 에이전트를 오케스트레이션하는 방식에 가깝습니다.",
+        {
+            "title": "종합 판단",
+            "body": "AI Agent 기술은 단순 챗봇이나 문서 검색 도구를 넘어, 목표를 이해하고 도구를 호출하며 업무 단계를 이어가는 실행형 구조로 이동하고 있습니다. 최근 흐름의 핵심은 모델 자체보다도 상태 관리, 도구 연동, 권한 통제, 평가 체계를 함께 묶는 운영 구조에 있습니다.",
+        },
+        {
+            "title": "기술 구조 변화",
+            "body": "단일 LLM이 모든 업무를 처리하는 방식보다는 역할이 분리된 에이전트들을 오케스트레이션하는 구조가 확산되고 있습니다. 이 과정에서 LangGraph, AutoGen 계열처럼 상태 전이, 재시도, 분기, 관찰 가능성을 지원하는 프레임워크의 중요성이 커지고 있습니다.",
+        },
+        {
+            "title": "기업 적용 시사점",
+            "body": "기업 환경에서는 RAG만으로는 충분하지 않습니다. ERP, CRM, 그룹웨어, 데이터베이스, 승인 시스템과 연결되면서 실제 업무 트랜잭션을 처리할 수 있어야 하며, 이때 감사 로그와 권한 체계가 반드시 함께 설계되어야 합니다.",
+        },
+        {
+            "title": "리스크 및 확인사항",
+            "body": "웹·OS 조작형 에이전트는 API가 없는 업무까지 자동화할 수 있다는 장점이 있지만, 화면 변경, 오작동, 민감 정보 노출 위험이 있습니다. 초기 적용은 완전 자율보다 사람 검토 단계를 포함한 반자동 구조가 현실적입니다.",
+        },
     ],
     "🛠️ 오픈소스 에이전트 프레임워크": [
-        "LangChain, LangGraph, AutoGen 계열처럼 에이전트의 상태, 도구 호출, 분기, 재시도 흐름을 구조화하려는 프레임워크 경쟁이 계속되고 있습니다.",
-        "실무에서는 단순 데모보다 상태 관리, 관찰 가능성, 평가 자동화, 실패 복구 흐름을 얼마나 안정적으로 제공하는지가 중요합니다.",
-        "프레임워크 선택 시에는 기능 수보다 팀의 개발 방식, 운영 환경, 로그 추적 체계와 잘 맞는지를 우선 확인해야 합니다.",
+        {
+            "title": "종합 판단",
+            "body": "오픈소스 에이전트 프레임워크는 실험용 데모 수준에서 벗어나, 상태 관리와 실행 흐름을 안정적으로 제어하는 방향으로 발전하고 있습니다.",
+        },
+        {
+            "title": "기술 구조 변화",
+            "body": "최근 프레임워크의 핵심은 프롬프트 체이닝이 아니라, 에이전트 상태, 도구 호출, 실패 복구, 메모리 유지, 실행 로그를 구조적으로 관리하는 데 있습니다.",
+        },
+        {
+            "title": "기업 적용 시사점",
+            "body": "프레임워크 선택 시에는 기능 목록보다 운영 환경과의 적합성을 우선해야 합니다. 특히 로그 추적, 테스트 자동화, 버전 관리, 평가 데이터셋 연계 여부가 중요합니다.",
+        },
+        {
+            "title": "리스크 및 확인사항",
+            "body": "오픈소스 생태계는 변화 속도가 빠르기 때문에 장기 운영 관점에서는 커뮤니티 활성도, 문서 품질, 하위 호환성, 보안 업데이트 주기를 확인해야 합니다.",
+        },
     ],
     "🏢 기업 업무 자동화 에이전트": [
-        "기업 업무 자동화 에이전트는 문서 검색 수준을 넘어 ERP, CRM, 그룹웨어, 데이터베이스, 승인 시스템과 연결되는 방향으로 확장되고 있습니다.",
-        "다만 실제 업무 시스템을 조작하는 순간 권한, 감사 로그, 승인 절차, 예외 처리 기준이 반드시 필요합니다.",
-        "업무 자동화 품질은 모델 성능만으로 결정되지 않고, 데이터 품질, 프로세스 정의, 운영 피드백 루프에 크게 좌우됩니다.",
+        {
+            "title": "종합 판단",
+            "body": "기업 업무 자동화 에이전트는 문서 검색과 요약을 넘어, 내부 시스템을 조회하고 업무 요청을 생성하며 예외 상황을 처리하는 방향으로 확장되고 있습니다.",
+        },
+        {
+            "title": "기술 구조 변화",
+            "body": "업무 자동화형 에이전트는 LLM, RAG, API 연동, 워크플로우 엔진, 권한 체계가 결합된 구조로 설계되는 흐름입니다.",
+        },
+        {
+            "title": "기업 적용 시사점",
+            "body": "실제 업무에 적용하려면 태스크 단위가 명확해야 합니다. 단순히 AI를 붙이는 것보다 어떤 업무를 자동화하고, 어느 단계에서 사람 승인을 받을지 정의하는 것이 우선입니다.",
+        },
+        {
+            "title": "리스크 및 확인사항",
+            "body": "업무 시스템을 직접 조작하는 경우 오작동의 영향이 큽니다. 따라서 실행 전 검증, 승인 단계, 감사 로그, 롤백 절차가 반드시 필요합니다.",
+        },
     ],
     "🖥️ 자율형 웹/OS 브라우징 에이전트": [
-        "웹/OS 브라우징 에이전트는 API가 없는 화면 기반 업무를 처리할 수 있다는 장점이 있지만, UI 변경과 보안 정책에 취약할 수 있습니다.",
-        "사람처럼 화면을 보고 클릭하는 구조는 강력하지만, 기업 환경에서는 민감 정보 노출, 오작동, 권한 남용을 통제하는 장치가 필요합니다.",
-        "실무 적용 시에는 완전 자율보다는 사람 검토 단계가 포함된 반자동 흐름으로 시작하는 편이 안전합니다.",
+        {
+            "title": "종합 판단",
+            "body": "자율형 웹·OS 브라우징 에이전트는 API가 없는 구형 업무 환경까지 자동화할 수 있다는 점에서 주목받고 있습니다.",
+        },
+        {
+            "title": "기술 구조 변화",
+            "body": "기존 스크래퍼나 RPA가 DOM 구조나 고정 좌표에 의존했다면, 최근 방식은 화면을 인식하고 상황에 따라 클릭과 입력 경로를 조정하는 방향입니다.",
+        },
+        {
+            "title": "기업 적용 시사점",
+            "body": "API 연동이 어려운 레거시 시스템, 반복 입력 업무, 웹 기반 정보 수집 업무에는 적용 가능성이 있습니다. 다만 초기에는 사람 확인이 포함된 보조 자동화 형태가 적합합니다.",
+        },
+        {
+            "title": "리스크 및 확인사항",
+            "body": "화면 조작형 에이전트는 계정, 쿠키, 내부 시스템 화면에 접근할 수 있으므로 허용 도메인, 작업 범위, 계정 권한, 실행 로그를 강하게 제한해야 합니다.",
+        },
     ],
 }
 
@@ -77,27 +129,6 @@ def contains_keyword(article, keyword):
 
 @st.cache_data(ttl=600, show_spinner=False)
 def load_articles():
-    """
-    실제 크롤러가 있다면 이 함수만 교체하시면 됩니다.
-
-    권장 반환 구조:
-    [
-        {
-            "title": "...",
-            "category": "...",
-            "source": "...",
-            "published_at": "...",
-            "collected_at": "...",
-            "content": "...",
-            "insight": "...",
-            "url": "...",
-            "source_type": "공식 블로그 / 기술매체 / GitHub / 기타",
-            "verification": "확인 완료 / 확인 필요 / 샘플 데이터",
-            "tags": ["MCP", "Agent", "RAG"]
-        }
-    ]
-    """
-
     collected_at = now_kst_text()
 
     return [
@@ -205,37 +236,49 @@ def apply_filters(articles, query, selected_categories, verification_filter, sou
     return filtered
 
 
-def render_article_card(article, compact_mode):
+def render_summary_block(selected_categories):
+    if len(selected_categories) == len(CATEGORIES):
+        summary_items = REPORT_SUMMARY[CATEGORY_ALL]
+        st.markdown("#### 전체 기술 동향 요약")
+        for item in summary_items:
+            with st.container(border=True):
+                st.markdown(f"##### {item['title']}")
+                st.write(item["body"])
+    else:
+        for category in selected_categories:
+            st.markdown(f"#### {category}")
+            for item in REPORT_SUMMARY[category]:
+                with st.container(border=True):
+                    st.markdown(f"##### {item['title']}")
+                    st.write(item["body"])
+            st.write("")
+
+
+def render_article_card(article):
     with st.container(border=True):
-        meta_col, action_col = st.columns([4, 1])
+        st.caption(
+            f"{article['category']}  ·  {article['source']}  ·  "
+            f"수집 {article['collected_at']}"
+        )
 
-        with meta_col:
-            st.caption(
-                f"{article['category']}  ·  {article['source']}  ·  "
-                f"수집 {article['collected_at']}"
-            )
-            st.markdown(f"#### {article['title']}")
+        st.markdown(f"#### {article['title']}")
 
-        with action_col:
-            st.link_button("원문 보기", article["url"], width="stretch")
-
-        if compact_mode:
-            with st.expander("상세 내용 보기"):
-                st.write(article["content"])
-                st.info(f"현업 관점: {article['insight']}")
-        else:
+        with st.expander("상세 내용 보기", expanded=True):
             st.write(article["content"])
             st.info(f"현업 관점: {article['insight']}")
 
-        tag_text = " · ".join(article.get("tags", []))
-        st.caption(
-            f"출처 성격: {article.get('source_type', '미분류')}  |  "
-            f"검증 상태: {article.get('verification', '미확인')}  |  "
-            f"태그: {tag_text}"
-        )
+            tag_text = " · ".join(article.get("tags", []))
+            st.caption(
+                f"출처 성격: {article.get('source_type', '미분류')}  |  "
+                f"검증 상태: {article.get('verification', '미확인')}  |  "
+                f"태그: {tag_text}"
+            )
+
+        st.link_button("원문 보기", article["url"], use_container_width=True)
 
 
 articles = load_articles()
+
 
 with st.sidebar:
     st.markdown("### 검색 및 필터")
@@ -263,22 +306,21 @@ with st.sidebar:
         horizontal=False,
     )
 
-    compact_mode = st.checkbox("본문 접기", value=True)
-
     st.divider()
 
-    if st.button("실시간 동기화", width="stretch"):
+    if st.button("실시간 동기화", use_container_width=True):
         with st.spinner("크롤링 데이터를 동기화하는 중입니다."):
             time.sleep(0.5)
             st.cache_data.clear()
         st.toast("동기화가 완료되었습니다.", icon="✅")
         st.rerun()
 
-    st.caption("크롤러를 연결한 뒤에는 샘플 데이터 경고를 끄고 운영하시면 됩니다.")
+    st.caption("운영 전환 시 load_articles() 함수에 실제 크롤러 결과를 연결하세요.")
 
 
 if not selected_categories:
     selected_categories = CATEGORIES
+
 
 filtered_articles = apply_filters(
     articles=articles,
@@ -296,53 +338,29 @@ else:
     filtered_articles = list(filtered_articles)
 
 
-st.title("🧭 AI Agent Briefing")
-st.caption("AI Agent 기술 동향을 수집, 분류, 요약하는 브리핑 대시보드입니다.")
+st.title("AI Agent 기술 트렌드")
+st.caption(f"최근 갱신: {now_kst_text()} KST")
+st.write("AI Agent 관련 최신 기술 흐름을 수집하고, 실무 적용 관점에서 구조화한 브리핑 리포트입니다.")
 
 if IS_SAMPLE_DATA:
-    st.warning(
-        "현재 화면은 샘플 데이터 기준입니다. 실제 서비스처럼 보이게 하려면 "
-        "load_articles() 함수에 크롤러 결과를 연결하고, verification 값을 실제 검증 상태로 바꾸세요."
+    st.caption(
+        "현재는 샘플 데이터 기준입니다. 실제 운영 시에는 크롤러 수집 결과와 검증 상태를 연결하는 것을 권장합니다."
     )
-
-metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
-
-category_counter = Counter(item["category"] for item in filtered_articles)
-source_counter = Counter(item["source_type"] for item in filtered_articles)
-
-metric_col1.metric("노출 리포트", f"{len(filtered_articles)}건", border=True)
-metric_col2.metric("선택 분류", f"{len(selected_categories)}개", border=True)
-metric_col3.metric("출처 유형", f"{len(source_counter)}개", border=True)
-metric_col4.metric("마지막 갱신", now_kst_text(), border=True)
 
 st.divider()
 
+
 summary_tab, report_tab, data_tab = st.tabs(
-    ["핵심 요약", "상세 리포트", "수집 데이터"]
+    ["핵심요약", "상세리포트", "수집 데이터"]
 )
 
+
 with summary_tab:
-    st.subheader("브리핑 요약")
+    render_summary_block(selected_categories)
 
-    if len(selected_categories) == len(CATEGORIES):
-        summary_key = CATEGORY_ALL
-        st.markdown(f"##### {CATEGORY_ALL}")
-        for sentence in SUMMARY_DATA[summary_key]:
-            st.write(f"• {sentence}")
-    else:
-        for category in selected_categories:
-            st.markdown(f"##### {category}")
-            for sentence in SUMMARY_DATA[category]:
-                st.write(f"• {sentence}")
-            st.write("")
-
-    st.info(
-        "운영용으로 전환할 때는 요약 문장도 고정 문구가 아니라, "
-        "수집된 기사 본문을 기준으로 별도 요약 함수에서 생성하도록 분리하는 편이 좋습니다."
-    )
 
 with report_tab:
-    st.subheader("상세 리포트")
+    st.markdown("#### 상세리포트")
 
     if query_input:
         st.caption(f"검색어: {query_input}")
@@ -351,20 +369,19 @@ with report_tab:
         st.info("현재 검색 조건에 맞는 리포트가 없습니다. 검색어 또는 필터를 조정해보세요.")
     else:
         for article in filtered_articles:
-            render_article_card(article, compact_mode=compact_mode)
+            render_article_card(article)
+
 
 with data_tab:
-    st.subheader("수집 데이터 원본")
-
+    st.markdown("#### 수집 데이터 원본")
     st.caption(
-        "운영 단계에서는 이 표를 관리자 확인용으로 남겨두면, "
-        "제목·출처·검증 상태·태그 오류를 빠르게 점검할 수 있습니다."
+        "운영 단계에서는 관리자 점검용으로 남겨두면 제목, 출처, 검증 상태, 태그 오류를 빠르게 확인할 수 있습니다."
     )
 
     st.dataframe(
         filtered_articles,
         hide_index=True,
-        width="stretch",
+        use_container_width=True,
         column_order=[
             "title",
             "category",
