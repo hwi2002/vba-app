@@ -4,7 +4,7 @@ import time
 # 1. 앱 기본 설정 (웹 브라우저 탭 이름과 아이콘)
 st.set_page_config(page_title="AI Insight Studio", page_icon="⚡", layout="wide")
 
-# 2. 고급스러운 다크/블루 테마 세련된 CSS 디자인 주입 (VBA의 스타일 시트 역할)
+# 2. 고급스러운 다크/블루 테마 세련된 CSS 디자인 주입 (VBA의 스타일 시체 역할)
 st.markdown("""
     <style>
     /* 메인 배경색 및 글꼴 변경 */
@@ -54,11 +54,11 @@ st.markdown("""
         font-weight: 600;
     }
     </style>
-""", unsafe_allowed_code=True)
+""", unsafe_allow_html=True)
 
 # 3. 헤더 타이틀 섹션
-st.markdown("<h1 style='text-align: center; margin-bottom: 5px;'>⚡ AI INSIGHT STUDIO</h1>", unsafe_allowed_code=True)
-st.markdown("<p style='text-align: center; color: #666; font-size: 16px; margin-bottom: 30px;'>카테고리별 글로벌 최신 AI 기술 크롤링 및 실시간 핵심 요약 시스템</p>", unsafe_allowed_code=True)
+st.markdown("<h1 style='text-align: center; margin-bottom: 5px;'>⚡ AI INSIGHT STUDIO</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #666; font-size: 16px; margin-bottom: 30px;'>카테고리별 글로벌 최신 AI 기술 크롤링 및 실시간 핵심 요약 시스템</p>", unsafe_allow_html=True)
 
 # 4. 사이드바 메뉴 디자인 (정돈된 레이아웃)
 st.sidebar.markdown("### 📂 기술 카테고리")
@@ -116,7 +116,7 @@ with col2:
             time.sleep(1.2)
         st.balloons() # 축하 풍선 이펙트!
 
-st.markdown("<br>", unsafe_allowed_code=True)
+st.markdown("<br>", unsafe_allow_html=True)
 
 # 7. 뉴스 카드 출력 섹션
 for news in ai_news_data:
@@ -134,4 +134,4 @@ for news in ai_news_data:
                     <p style="color: #333; font-size: 14px; margin-bottom: 0; margin-top: 4px; font-weight: 500;">{news['summary']}</p>
                 </div>
             </div>
-        """, unsafe_allowed_code=True)
+        """, unsafe_allow_html=True)
