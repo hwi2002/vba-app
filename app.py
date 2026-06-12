@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# 1. 시스템 초기 설정 및 레이아웃 구성
+# 1. 시스템 초기 설정 및 와이드 레이아웃 구성
 st.set_page_config(
     page_title="AI Agent Briefing", 
     page_icon="📝", 
@@ -9,59 +9,60 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. 메인 화면 타이틀 및 서브타이틀 (담백하고 직관적인 뉴스레터 스타일)
+# 2. 담백하고 직관적인 텍스트 타이틀 배정 (HTML 태그 완전 배제)
 st.title("📝 AI 에이전트 브리핑")
-st.markdown("### 글로벌 최신 동향과 현업 인사이트")
-st.markdown("---")
+st.text("글로벌 최신 동향과 현업 인사이트를 전해드립니다.")
+st.divider() # 안전한 대시보드 가로 구분선
 
 # 3. 사이드바 컨트롤러 (검색창 및 카테고리 필터)
 st.sidebar.markdown("### 🔍 검색 및 필터")
-query_input = st.sidebar.text_input("💡 키워드 검색", "", placeholder="검색어를 입력하세요...", key="search_box_final")
+query_input = st.sidebar.text_input("💡 키워드 검색", "", placeholder="검색어를 입력하세요...", key="search_final_v2")
 category_filter = st.sidebar.selectbox(
     "📂 기술 분류 선택",
     ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"],
-    key="select_box_final"
+    key="select_final_v2"
 )
 
-st.sidebar.markdown("---")
+st.sidebar.divider()
 with st.sidebar:
-    if st.button("🔄 실시간 동기화", use_container_width=True, key="btn_sync_final"):
-        with st.spinner("최신 정보를 수집하는 중..."):
-            time.sleep(0.6)
+    if st.button("🔄 실시간 동기화", use_container_width=True, key="btn_sync_final_v2"):
+        with st.spinner("정보를 동기화하는 중..."):
+            time.sleep(0.3)
         st.toast("동향 리포트가 최신화되었습니다.", icon="✅")
 
 # 4. 카테고리별 핵심 요약 브리핑 문구 정의
 summary_data = {
     "전체 보기": [
-        "🔹 비즈니스 패러다임 전환: AI 시장이 단순 질문-답변을 넘어 복잡한 목표를 스스로 판단 및 완결하는 '자율형 에이전트' 체제로 진화했습니다.",
-        "🔹 레거시 자동화의 대체: 고정된 구조로 구동되어 UI 변화에 취약하던 기존의 매크로(VBA), RPA 인프라가 유연한 인공지능 기반의 아키텍처로 대체되고 있습니다.",
-        "🔹 오케스트레이션의 표준화: 거대한 단일 모델을 구동하는 대신 전문 태스크를 가진 소형 독립 에이전트 다수를 묶어 협업시키는 멀티 에이전트 모델이 주류로 안착했습니다."
+        "• 비즈니스 패러다임 전환: AI 시장이 단순 질문-답변을 넘어 복잡한 목표를 스스로 판단 및 완결하는 '자율형 에이전트' 체제로 진화했습니다.",
+        "• 레거시 자동화의 대체: 고정된 구조로 구동되어 UI 변화에 취약하던 기존의 매크로(VBA), RPA 인프라가 유연한 인공지능 기반의 아키텍처로 대체되고 있습니다.",
+        "• 오케스트레이션의 표준화: 거대한 단일 모델을 구동하는 대신 전문 태스크를 가진 소형 독립 에이전트 다수를 묶어 협업시키는 멀티 에이전트 모델이 주류로 안착했습니다."
     ],
     "🛠️ 오픈소스 에이전트 프레임워크": [
-        "🔹 다중 모듈 연동 체계 수립: 개별 에이전트의 페르소나를 정의하고 행동 파이프라인을 체계적으로 제어할 수 있는 오픈소스 개발 프레임워크 경쟁이 치열합니다.",
-        "🔹 메모리 유실 오류 최소화: 상호 대화 과정에서 정보가 손실되던 메모리 레이어를 독립형 데이터베이스와 바인딩하여 복잡한 실무 컨텍스트 유지력을 강화했습니다.",
-        "🔹 개발 주기 단축 체감: 코어 아키텍처가 프레임워크 단위로 표준화되면서 업무 에이전트 빌드를 위한 현업 엔지니어의 코딩 분량이 40% 이상 감소했습니다."
+        "• 다중 모듈 연동 체계 수립: 개별 에이전트의 페르소나를 정의하고 행동 파이프라인을 체계적으로 제어할 수 있는 오픈소스 개발 프레임워크 경쟁이 치열합니다.",
+        "• 메모리 유실 오류 최소화: 상호 대화 과정에서 정보가 손실되던 메모리 레이어를 독립형 데이터베이스와 바인딩하여 복잡한 실무 컨텍스트 유지력을 강화했습니다.",
+        "• 개발 주기 단축 체감: 코어 아키텍처가 프레임워크 단위로 표준화되면서 업무 에이전트 빌드를 위한 현업 엔지니어의 코딩 분량이 40% 이상 감소했습니다."
     ],
     "🏢 기업 업무 자동화 에이전트": [
-        "🔹 전사 시스템 직접 제어: 단순 사내 문서를 요약 및 검색하여 띄우던 초기 모델을 넘어 내부 ERP, CRM 등 주요 레거시 시스템의 데이터 처리 권한을 위임받는 수준에 이르렀습니다.",
-        "🔹 자율 예외 분기 처리: 알 수 없는 비즈니스 조건이나 에러 발생 시 멈추는 매크로와 달리 AI가 원인을 스스로 판단하고 정정하여 태스크를 지속 완결합니다.",
-        "🔹 데스크톱 자동화 확장: 이메일 수신부터 발주서 생성, 회계 보고서 자동 취합 및 결제 시스템 상신까지 전사 도구를 유기적으로 묶는 강력한 자동화가 도입되고 있습니다."
+        "• 전사 시스템 직접 제어: 단순 사내 문서를 요약 및 검색하여 띄우던 초기 모델을 넘어 내부 ERP, CRM 등 주요 레거시 시스템의 데이터 처리 권한을 위임받는 수준에 이르렀습니다.",
+        "• 자율 예외 분기 처리: 알 수 없는 비즈니스 조건이나 에러 발생 시 멈추는 매크로와 달리 AI가 원인을 스스로 판단하고 정정하여 태스크를 지속 완결합니다.",
+        "• 데스크톱 자동화 확장: 이메일 수신부터 발주서 생성, 회계 보고서 자동 취합 및 결제 시스템 상신까지 전사 도구를 유기적으로 묶는 강력한 자동화가 도입되고 있습니다."
     ],
     "🖥️ 자율형 웹/OS 브라우징 에이전트": [
-        "🔹 비정형 시각 인지 인터페이스: 전용 API 접근 권한이 전무한 구형 시스템이라도 모니터 화면 자체를 비전 모델로 분석하여 인간과 똑같이 마우스와 키보드를 조작합니다.",
-        "🔹 동적 웹 구조 복구 안정성: 웹페이지 배치가 임의로 변경되면 정지하던 스크래퍼 방식과 달리 상황에 유연하게 대처하여 올바른 경로를 자율적으로 재탐색합니다.",
-        "🔹 가상 디지털 노동력 확보: 앤드로픽의 크롬/OS 제어 기술을 시작으로 가상 데스크톱 내 단순 반복 사무 처리를 인간의 감독하에 완전 전가할 수 있는 기술적 토대가 완성되었습니다."
+        "• 비정형 시각 인지 인터페이스: 전용 API 접근 권한이 전무한 구형 시스템이라도 모니터 화면 자체를 비전 모델로 분석하여 인간과 똑같이 마우스와 키보드를 조작합니다.",
+        "• 동적 웹 구조 복구 안정성: 웹페이지 배치가 임의로 변경되면 정지하던 스크래퍼 방식과 달리 상황에 유연하게 대처하여 올바른 경로를 자율적으로 재탐색합니다.",
+        "• 가상 디지털 노동력 확보: 앤드로픽의 크롬/OS 제어 기술을 시작으로 가상 데스크톱 내 단순 반복 사무 처리를 인간의 감독하에 완전 전가할 수 있는 기술적 토대가 완성되었습니다."
     ]
 }
 
-# [스타일 1] 상단 요약 박스 출력 (스트림릿 전용 st.info 상자로 절대 깨지지 않음)
+# 상단 요약 텍스트 출력 (가장 에러 없는 마크다운 방식 채택)
 st.subheader(f"📢 {category_filter} 부문 핵심 요약")
 for bullet in summary_data[category_filter]:
-    st.markdown(bullet)
+    st.write(bullet)
 
-st.markdown("<br><br>", unsafe_allow_html=True)
+st.text("")
+st.text("")
 st.subheader("📋 실시간 기술 동향 상세 리포트")
-st.markdown("---")
+st.divider()
 
 # 5. 수집된 최신 AI 에이전트 상세 뉴스 데이터셋 (6개 카드 상자 알맹이)
 news_repository = [
@@ -121,11 +122,10 @@ news_repository = [
     }
 ]
 
-# 6. [스타일 2 적용] 하단 상세 카드 리스트 강제 렌더링 구역
+# 6. 하단 상세 카드 리스트 안전 렌더링 구역 (순수 스트림릿 기능만 사용)
 content_found = False
 
 for item in news_repository:
-    # 카테고리 및 키워드 필터링 매칭 검사
     is_category_valid = (category_filter == "전체 보기" or item["category"] == category_filter)
     is_keyword_valid = (query_input.lower() in item["title"].lower() or 
                         query_input.lower() in item["content"].lower() or
@@ -134,21 +134,18 @@ for item in news_repository:
     if is_category_valid and is_keyword_valid:
         content_found = True
         
-        # 개별 카드를 감싸는 깔끔한 박스 테두리 생성 (st.container)
+        # 개별 영역을 안전하게 묶어주는 순수 파이썬 컨테이너
         with st.container():
-            # 메타 정보 출력
             st.caption(f"📌 {item['category']}  |  🌐 {item['source']}  |  🕒 {item['time']}")
-            # 제목 크고 굵게 출력
-            st.subheader(item['title'])
-            # 본문 내용 출력
+            st.markdown(f"### {item['title']}")
             st.write(item['content'])
             
-            # 현업 분석 인사이틀 상자 (st.info로 스타일 차별화)
-            st.info(f"💡 현업 매니저 분석 : {item['insight']}")
+            # 현업 분석 인사이틀 상자 (st.success 상자로 스타일 이원화)
+            st.success(f"💡 현업 매니저 분석 : {item['insight']}")
             
-            # 원문 이동 링크 단추 구현
+            # 순수 단추 링크 연동 (절대 에러 없음)
             st.link_button("🔗 출처 원문 보기", item["url"])
-            st.markdown("<br><hr><br>", unsafe_allowed_code=True)
+            st.divider() # 하단 구분선
 
 if not content_found:
     st.info("검색 조건에 맞는 동향 데이터가 존재하지 않습니다.")
