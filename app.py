@@ -1,125 +1,150 @@
 import streamlit as st
 import time
 
-# 1. 브라우저 레이아웃 및 탭 설정
-st.set_page_config(page_title="AI Agent Trends", page_icon="🧬", layout="wide")
+# 1. 브라우저 및 레이아웃 설정
+st.set_page_config(page_title="AI Agent Weekly", page_icon="📝", layout="wide")
 
-# 2. 애플 감성 미니멀리즘 CSS 디자인 (타이틀 하이라이트 강화)
+# 2. 고급 모던 UI 디자인 CSS 주입 (프로토타입 감성 완전 제거)
 st.markdown("""
     <style>
     @import url('https://googleapis.com');
     
+    /* 전체 레이아웃 정돈 */
     .main .block-container {
-        font-family: 'Inter', -apple-system, sans-serif !important;
-        padding-top: 3rem;
-        padding-bottom: 3rem;
-        max-width: 800px;
+        font-family: 'Pretendard', -apple-system, sans-serif !important;
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+        max-width: 820px;
+        background-color: #ffffff;
     }
     
-    /* 타이틀 강력 하이라이트 효과 (네온 민트 그라데이션) */
-    .app-title-container {
+    /* 깔끔하고 직관적인 메인 헤더 (거창한 그라데이션 배제) */
+    .brand-header {
         text-align: center;
-        margin-bottom: 40px;
-        padding: 20px 0;
+        margin-bottom: 45px;
     }
-    .app-title {
-        font-size: 42px !important;
-        font-weight: 800 !important;
-        color: #111111;
-        letter-spacing: -1.5px;
-        line-height: 1.2;
+    .brand-title {
+        font-size: 32px !important;
+        font-weight: 700 !important;
+        color: #1a1a1a;
+        letter-spacing: -0.8px;
+        margin-bottom: 6px;
     }
-    .app-title span {
-        background: linear-gradient(120deg, #00FFCC 0%, #0066CC 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .app-subtitle {
-        font-size: 15px;
-        color: #666666;
-        margin-top: 12px;
+    .brand-subtitle {
+        font-size: 14px;
+        color: #737373;
+        font-weight: 400;
     }
     
-    /* 최신 트렌드 서머리 박스 (가장 상단 요약용) */
-    .trend-summary-card {
-        background: #F5F5F7;
-        border-radius: 14px;
-        padding: 24px;
-        margin-bottom: 40px;
-        border: none;
+    /* [스타일 1] 상단 요약 섹션: 깊이감 있는 미니멀 카드 형태 */
+    .summary-section {
+        background: #fdfdfd;
+        border: 1px solid #e5e5e5;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 50px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     }
-    .trend-summary-title {
-        font-size: 16px;
+    .summary-header {
+        font-size: 15px;
         font-weight: 700;
-        color: #111111;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
+        color: #171717;
+        margin-bottom: 16px;
+        letter-spacing: -0.3px;
     }
-    .trend-summary-body {
+    .summary-list {
+        margin: 0;
+        padding-left: 20px;
+        color: #404040;
         font-size: 14.5px;
-        color: #333333;
-        line-height: 1.6;
+        line-height: 1.7;
+    }
+    .summary-list li {
+        margin-bottom: 10px;
+    }
+    .summary-list li strong {
+        color: #171717;
     }
 
-    /* 하단 상세 뉴스 카드 디자인 */
-    .agent-card {
-        background: #ffffff;
-        padding: 26px 0px;
-        border-bottom: 1px solid #eeeeee;
-        margin-bottom: 5px;
+    /* [스타일 2] 하단 상세 카드 섹션: 전형적인 뉴스레터 아티클 스타일 */
+    .article-card {
+        padding: 32px 0;
+        border-bottom: 1px solid #f0f0f0;
     }
-    .badge-cat {
+    .article-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+    .tag-category {
         font-size: 11px;
         font-weight: 600;
-        color: #0066CC;
-        background: #F2F7FD;
-        padding: 4px 12px;
-        border-radius: 6px;
-        margin-right: 8px;
-    }
-    .badge-src {
-        font-size: 11px;
-        font-weight: 500;
-        color: #555555;
-        background: #F5F5F7;
+        color: #2563eb;
+        background: #eff6ff;
         padding: 4px 10px;
-        border-radius: 6px;
+        border-radius: 4px;
     }
-    .summary-box {
-        background: #F9FBF9;
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-top: 16px;
-        font-size: 14px;
-        color: #2c3e50;
-        line-height: 1.6;
+    .tag-source {
+        font-size: 12px;
+        font-weight: 500;
+        color: #525252;
     }
-    .text-link {
+    .tag-time {
+        font-size: 12px;
+        color: #a3a3a3;
+    }
+    .article-title {
+        font-size: 21px;
+        font-weight: 700;
+        color: #111111;
+        line-height: 1.4;
+        margin: 0 0 12px 0;
+        letter-spacing: -0.5px;
+    }
+    .article-content {
+        color: #525252;
+        font-size: 14.5px;
+        line-height: 1.65;
+        margin: 0 0 16px 0;
+    }
+    
+    /* 상세 카드 내부의 AI 인사이클 박스 (상단 요약과 다르게 플랫하게 처리) */
+    .article-insight {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 14px 18px;
+        font-size: 13.5px;
+        color: #334155;
+        border-left: 3px solid #cbd5e1;
+    }
+    
+    /* 세련된 우측 화살표 텍스트 링크 */
+    .article-link {
         display: inline-block;
-        font-size: 13px;
+        font-size: 13.5px;
         font-weight: 600;
-        color: #0066CC !important;
+        color: #2563eb !important;
         text-decoration: none !important;
         margin-top: 14px;
     }
-    .text-link:hover {
+    .article-link:hover {
         text-decoration: underline !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. 상단 하이라이트 타이틀 영역
+# 3. 정돈된 브랜드 헤더 영역
 st.markdown("""
-    <div class='app-title-container'>
-        <div class='app-title'>AI Agent <span>Intelligence</span></div>
-        <div class='app-subtitle'>글로벌 에이전트 구축 기술동향 핵심 브리핑 시스템</div>
+    <div class='brand-header'>
+        <div class='brand-title'>AI Agent Weekly</div>
+        <div class='brand-subtitle'>실무 관점의 글로벌 인공지능 에이전트 동향 리포트</div>
     </div>
 """, unsafe_allow_html=True)
 
-# 4. 사이드바 검색 및 카테고리 필터
+# 4. 사이드바 검색 및 필터 구조
 st.sidebar.markdown("### 🔍 Filter")
-search_query = st.sidebar.text_input("💡 키워드 검색", "", placeholder="검색어를 입력하세요...")
+search_query = st.sidebar.text_input("키워드 검색", "", placeholder="검색어를 입력하세요...")
 category = st.sidebar.selectbox(
     "카테고리 선택",
     ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"]
@@ -127,24 +152,48 @@ category = st.sidebar.selectbox(
 st.sidebar.markdown("---")
 
 with st.sidebar:
-    if st.button("🔄 실시간 동기화", use_container_width=True):
-        with st.spinner("수집 중..."):
+    if st.button("🔄 최신 동향 새로고침", use_container_width=True):
+        with st.spinner("업데이트 중..."):
             time.sleep(1)
-        st.toast("최신 기술 동향을 업데이트했습니다.", icon="✅")
+        st.toast("최신 기술 동향이 동기화되었습니다.", icon="📝")
 
-# 5. 카테고리별 동향 요약 데이터 정의 (대시보드 지표 대신 들어간 상단 텍스트 요약)
+# 5. [스타일 1 적용] 카테고리별 항목별 상세 요약 데이터 브리핑
 category_summaries = {
-    "전체 보기": "현재 글로벌 AI 시장은 단순 챗봇 단계를 넘어 스스로 판단하고 행동하는 '자율형 에이전트(Agent)'로 패러다임이 완전히 전환되었습니다. 인프라 구축을 위한 오픈소스 프레임워크부터 PC를 제어하는 OS 브라우징까지 다각도로 고도화가 진행 중입니다.",
-    "🛠️ 오픈소스 에이전트 프레임워크": "개발자들이 에이전트를 조립할 수 있는 아키텍처 경쟁이 치열합니다. 최근 트렌드는 단일 AI가 아닌, '기획-코딩-검증' 등 역할을 쪼갠 멀티 에이전트(Multi-Agent) 간의 기억(Memory) 공유 공유 메커니즘 고도화에 집중되어 있습니다.",
-    "🏢 기업 업무 자동화 에이전트": "엔터프라이즈 부문에서는 고정된 규칙(Rule) 기반의 매크로 시스템을 대체하기 시작했습니다. 내부 데이터베이스(ERP/CRM)를 API로 연동하여 스스로 권한을 갖고 비즈니스 프로세스를 완결짓는 자율 업무 에이전트가 주류로 자리 잡고 있습니다.",
-    "🖥️ 자율형 웹/OS 브라우징 에이전트": "가장 파괴적인 최신 분야입니다. AI가 화면 시각 정보를 인식하여 인간처럼 마우스를 클릭하고 키보드를 타이핑하는 기술이 상용화 단계에 진입했으며, 이는 UI 구조가 바뀌어도 유연하게 대응하는 차세대 자동화 인프라의 핵심입니다."
+    "전체 보기": """
+        <ul class='summary-list'>
+            <li><strong>패러다임의 시프트:</strong> 전 세계 AI 시장의 초점이 단순 질의응답형 챗봇에서 사용자의 개입 없이 목표를 완결하는 <strong>'자율형 에이전트(Agent)'</strong>로 완전히 이동했습니다.</li>
+            <li><strong>엔터프라이즈 중심의 확장:</strong> 고정된 프로그래밍 규칙을 따르던 기존 자동화(VBA, RPA) 시장이 대규모 비정형 데이터를 처리할 수 있는 AI 인프라와 결합하며 대대적인 교체 국면을 맞이했습니다.</li>
+            <li><strong>멀티 에이전트의 주류화:</strong> 하나의 거대한 모델이 모든 문제를 해결하는 대신, 특정 도메인에 특화된 다수의 작은 에이전트가 협업하는 아키텍처가 실무 표준으로 정착 중입니다.</li>
+        </ul>
+    """,
+    "🛠️ 오픈소스 에이전트 프레임워크": """
+        <ul class='summary-list'>
+            <li><strong>오케스트레이션 고도화:</strong> 개발자가 직접 에이전트의 행동 흐름을 제어하고 설계할 수 있는 모듈형 오픈소스 아키텍처 경쟁이 심화되고 있습니다.</li>
+            <li><strong>컨텍스트 유지력 개선:</strong> 여러 에이전트가 대화를 주고받을 때 누수되던 메모리(Memory) 레이어를 독립형 DB와 연동하여 장기 기억 보존력을 대폭 끌어올렸습니다.</li>
+            <li><strong>개발 생산성 제고:</strong> 프레임워크 자체 표준화가 이루어지며 현업 엔지니어들의 에이전트 파이프라인 빌드 공수가 기존 대비 약 40% 이상 절감되었습니다.</li>
+        </ul>
+    """,
+    "🏢 기업 업무 자동화 에이전트": """
+        <ul class='summary-list'>
+            <li><strong>백오피스 완전 자동화:</strong> 사내 매뉴얼이나 문서를 RAG(검색 증강 생성) 형태로 읽는 단계를 넘어, 실제 사내 ERP, CRM 등 핵심 레거시 인프라의 권한을 제어하는 구조로 진화했습니다.</li>
+            <li><strong>자율적 예외 처리:</strong> 사전에 정의되지 않은 돌발 비즈니스 상황이나 예외 오류가 발생했을 때, AI가 스스로 판단하고 대안을 수집하여 프로세스를 중단 없이 완결합니다.</li>
+            <li><strong>VBA 생태계의 전환점:</strong> 엑셀 내부 매크로로 처리하던 한계를 넘어, 이메일 수신부터 결제 승인, 보고서 작성까지 전사적 도구를 유기적으로 잇는 파이프라인으로 빠르게 대체 중입니다.</li>
+        </ul>
+    """,
+    "🖥️ 자율형 웹/OS 브라우징 에이전트": """
+        <ul class='summary-list'>
+            <li><strong>시각 정보 기반 인터페이스:</strong> 소스 코드나 API가 제공되지 않는 구형 웹사이트나 프로그램도 AI가 모니터 화면 캡처본을 보고 인간처럼 마우스 위치와 키보드 입력을 정확히 인지합니다.</li>
+            <li><strong>UI 변동 대응력 확보:</strong> 웹페이지 디자인이나 단추 위치가 변경되면 오작동하던 기존 크롤러나 매크로와 달리, 시각 인식 모델을 바탕으로 상황에 맞춰 유연하게 경로를 재탐색합니다.</li>
+            <li><strong>대규모 에이전트 경제 진입:</strong> 앤트로픽의 'Computer Use'를 필두로 PC 조작 기술이 확장됨에 따라 사무직 직원의 단순 반복 동작을 완벽히 대행하는 가상 비서 시대가 열렸습니다.</li>
+        </ul>
+    """
 }
 
-# 상단 카테고리별 요약 파트 띄우기
+# 상단 요약 섹션 출력
 st.markdown(f"""
-    <div class='trend-summary-card'>
-        <div class='trend-summary-title'>🧬 {category} 부문 최신 기술 트렌드 요약</div>
-        <div class='trend-summary-body'>{category_summaries[category]}</div>
+    <div class='summary-section'>
+        <div class='summary-header'>📋 {category} 부문 핵심 트렌드 브리핑</div>
+        {category_summaries[category]}
     </div>
 """, unsafe_allow_html=True)
 
@@ -155,8 +204,8 @@ ai_news_data = [
         "category": "🛠️ 오픈소스 에이전트 프레임워크",
         "source": "LangChain Blog",
         "time": "15분 전",
-        "content": "개발자들이 복잡한 워크플로우를 자동화할 수 있도록 여러 개의 AI 에이전트가 서로 대화하며 문제를 해결하는 멀티 에이전트 아키텍처가 고도화되었습니다. 기획, 코딩, 테스트 에이전트가 순차적으로 업무를 수행합니다.",
-        "summary": "에이전트 간의 기억(Memory) 공유 메커니즘 개선으로 비즈니스 로직 설계 공수 40% 절감.",
+        "content": "개발자들이 복잡한 비즈니스 워크플로우를 유연하게 자동화할 수 있도록 여러 개의 AI 에이전트가 상호 작용하며 문제를 해결하는 멀티 에이전트 아키텍처가 업데이트되었습니다. 기획, 코딩, 테스트 에이전트가 각자 역할을 맡아 순차적으로 결과물을 도출합니다.",
+        "summary": "에이전트 간 메모리 공유 및 역할 분담 체계 표준화로 시스템 안정성 확보.",
         "url": "https://langchain.com"
     },
     {
@@ -164,8 +213,8 @@ ai_news_data = [
         "category": "🏢 기업 업무 자동화 에이전트",
         "source": "TechCrunch",
         "time": "2시간 전",
-        "content": "사전 정의된 고정 시나리오 없이 기업의 내부 매뉴얼과 실시간 ERP 데이터를 스스로 판단하여 자율적으로 고객을 응대하고 트랜잭션을 처리하는 자율형 비즈니스 에이전트 인프라가 대거 확산되고 있습니다.",
-        "summary": "단순 챗봇을 넘어 기업 API 연동을 통해 백오피스 업무까지 스스로 완결하는 구조 확립.",
+        "content": "정해진 시나리오 답변에 의존하던 기존 챗봇의 한계를 극복하고, 사내 매뉴얼과 실시간 고객 데이터를 바탕으로 스스로 판단하여 환불 절차 및 기술 상담을 자율적으로 처리하는 기업 전용 솔루션이 도입 성과를 발표했습니다.",
+        "summary": "단순 응대를 넘어 백오피스 API와 결합해 실질적인 비즈니스 트랜잭션을 완결하는 구조 구축.",
         "url": "https://techcrunch.com"
     },
     {
@@ -173,13 +222,13 @@ ai_news_data = [
         "category": "🖥️ 자율형 웹/OS 브라우징 에이전트",
         "source": "Wired",
         "time": "5시간 전",
-        "content": "AI가 모니터 화면을 실시간 캡처하여 마우스 커서를 움직이고 키보드를 타이핑하는 자율 제어 기술이 대폭 업데이트되었습니다. 웹사이트 로그인, 엑셀 다운로드, 이메일 전송 등을 끊김 없이 수행합니다.",
-        "summary": "VBA 매크로의 완전한 상위 호환 기술로, 화면 UI 구조가 변경되어도 시각 정보로 유연한 처리가 가능함.",
+        "content": "AI 에이전트가 PC 모니터 화면을 실시간 스크린샷으로 캡처하여 마우스 커서의 좌표를 계산하고 클릭하며, 텍스트 상자에 타이핑하는 기술이 한 단계 진화했습니다. 파일 다운로드 및 크로스 브라우징 이메일 전송 등을 안정적으로 구현합니다.",
+        "summary": "화면의 UI 구조나 버튼 위치가 변경되어도 시각 정보 바탕으로 유연한 대처 가능 (기존 매크로의 완전한 상위 호환).",
         "url": "https://wired.com"
     }
 ]
 
-# 7. 필터링 및 하단 상세 카드 출력 섹션
+# 7. [스타일 2 적용] 필터링 및 하단 상세 카드 출력 섹션
 has_content = False
 
 for news in ai_news_data:
@@ -190,18 +239,18 @@ for news in ai_news_data:
     if category_match and search_match:
         has_content = True
         st.markdown(f"""
-            <div class='agent-card'>
-                <div style='margin-bottom: 12px;'>
-                    <span class='badge-cat'>{news['category']}</span>
-                    <span class='badge-src'>🌐 {news['source']}</span>
-                    <span style='color: #999; font-size: 12px; margin-left: 8px;'>{news['time']}</span>
+            <div class='article-card'>
+                <div class='article-meta'>
+                    <span class='tag-category'>{news['category']}</span>
+                    <span class='tag-source'>🌐 {news['source']}</span>
+                    <span class='tag-time'>{news['time']}</span>
                 </div>
-                <h3 style='font-size: 20px; font-weight: 600; color: #111; margin: 0 0 10px 0;'>{news['title']}</h3>
-                <p style='color: #555; font-size: 14px; line-height: 1.6; margin: 0;'>{news['content']}</p>
-                <div class='summary-box'>
-                    <span style='color: #137333; font-weight: 600;'>💡 Briefing :</span> {news['summary']}
+                <div class='article-title'>{news['title']}</div>
+                <div class='article-content'>{news['content']}</div>
+                <div class='article-insight'>
+                    <strong>💡 실무 인사이이트:</strong> {news['summary']}
                 </div>
-                <a href='{news['url']}' target='_blank' class='text-link'>🔗 원문 리포트 읽기 →</a>
+                <a href='{news['url']}' target='_blank' class='article-link'>원문 아티클 읽기 ↗</a>
             </div>
         """, unsafe_allow_html=True)
 
