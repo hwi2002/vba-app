@@ -1,250 +1,276 @@
 import streamlit as st
 import time
 
-# 1. 브라우저 및 레이아웃 설정
-st.set_page_config(page_title="AI 에이전트 트렌드 리포트", page_icon="📝", layout="wide")
+# 1. 시스템 초기 설정 및 와이드 레이아웃 구성
+st.set_page_config(
+    page_title="AI Agent Briefing", 
+    page_icon="📝", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# 2. 시인성 강화를 위한 고대비/대형 폰트 CSS 디자인
+# 2. 가독성과 고대비 시인성을 극대화한 커스텀 스타일시트
 st.markdown("""
     <style>
     @import url('https://googleapis.com');
     
-    /* 전체 글꼴 및 본문 너비 조절 - 눈이 편안한 크기 */
     .main .block-container {
         font-family: 'Noto Sans KR', sans-serif !important;
         padding-top: 2.5rem;
-        padding-bottom: 4rem;
-        max-width: 900px;
-        background-color: #ffffff;
+        padding-bottom: 5rem;
+        max-width: 950px;
+        background-color: #FFFFFF;
     }
     
-    /* 직관적이고 깔끔한 메인 제목 */
-    .header-box {
-        text-align: center;
+    /* 담백하고 명확한 상단 타이틀 구역 */
+    .title-area {
+        text-align: left;
+        border-bottom: 3px solid #111111;
+        padding-bottom: 16px;
         margin-bottom: 35px;
-        padding: 10px 0;
     }
-    .header-title {
-        font-size: 36px !important;
+    .main-title {
+        font-size: 32px !important;
         font-weight: 900 !important;
-        color: #111111; /* 선명한 검은색 */
-        letter-spacing: -1px;
+        color: #111111;
+        line-height: 1.2;
     }
-    .header-subtitle {
-        font-size: 16px;
+    .main-subtitle {
+        font-size: 15px;
         color: #555555;
+        margin-top: 6px;
         font-weight: 500;
-        margin-top: 8px;
     }
     
-    /* [스타일 1] 상단 요약 섹션: 선명한 테두리와 체크마크로 가독성 극대화 */
-    .summary-card {
-        background: #F8F9FA; /* 연한 회색 배경 */
-        border: 2px solid #E9ECEF;
+    /* 상단 요약본 전용 UI */
+    .summary-container {
+        background-color: #F8FAFC;
+        border: 2px solid #E2E8F0;
         border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 40px;
+        padding: 26px;
+        margin-bottom: 45px;
     }
-    .summary-title {
+    .summary-heading {
         font-size: 18px;
         font-weight: 700;
-        color: #0D6EFD; /* 신뢰감을 주는 파란색 */
+        color: #1E40AF;
         margin-bottom: 16px;
-        border-bottom: 2px solid #0D6EFD;
-        padding-bottom: 8px;
     }
-    .summary-item {
-        font-size: 16px;
-        color: #212529; /* 고대비 진한 글자색 */
-        line-height: 1.6;
+    .summary-bullet {
+        font-size: 15.5px;
+        color: #334155;
+        line-height: 1.7;
         margin-bottom: 12px;
     }
-    .summary-item strong {
-        color: #000000;
-        font-weight: 700;
+    .summary-bullet:last-child {
+        margin-bottom: 0;
     }
-
-    /* [스타일 2] 하단 상세 카드 섹션: 확실히 구분되는 개별 상자 형태 */
-    .detail-card {
-        background: #FFFFFF;
-        border: 1px solid #CED4DA;
+    
+    /* 하단 상세 카드 전용 UI */
+    .content-box {
+        background-color: #FFFFFF;
+        border: 1px solid #D1D5DB;
         border-radius: 12px;
-        padding: 24px;
+        padding: 26px;
         margin-bottom: 24px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
     }
-    .meta-row {
+    .content-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         margin-bottom: 12px;
     }
-    .badge-category {
-        font-size: 12px;
+    .lbl-category {
+        font-size: 11.5px;
         font-weight: 700;
-        color: #198754; /* 초록색 */
-        background: #E8F5E9;
+        color: #166534;
+        background-color: #DCFCE7;
         padding: 4px 10px;
         border-radius: 6px;
-        display: inline-block;
     }
-    .badge-source {
+    .lbl-source {
         font-size: 13px;
         font-weight: 600;
-        color: #495057;
-        margin-left: 8px;
+        color: #4B5563;
     }
-    .badge-time {
+    .lbl-time {
         font-size: 13px;
-        color: #6C757D;
-        margin-left: 8px;
+        color: #9CA3AF;
     }
-    .detail-title {
-        font-size: 22px;
+    .content-title {
+        font-size: 21px;
         font-weight: 700;
         color: #111111;
-        margin: 8px 0 12px 0;
+        margin-top: 6px;
+        margin-bottom: 12px;
         line-height: 1.4;
     }
-    .detail-content {
-        color: #333333;
-        font-size: 15.5px;
+    .content-body {
+        color: #374151;
+        font-size: 15px;
         line-height: 1.65;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
     }
     
-    /* 상세 카드 내부의 AI 인사이클 박스 (상단 요약과 다르게 노란색 포인트 강조) */
-    .insight-box {
-        background: #FFFDE7; /* 연한 노란색 포스트잇 느낌 */
-        border-left: 4px solid #FBC02D;
-        border-radius: 4px;
+    /* 카드 하단 분석 요약 */
+    .insight-sticker {
+        background-color: #FFFDF0;
+        border-left: 4px solid #EAB308;
         padding: 14px 16px;
-        font-size: 14.5px;
-        color: #212529;
-        margin-bottom: 14px;
+        font-size: 14px;
+        color: #1E293B;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        line-height: 1.5;
     }
     
-    /* 눈에 아주 잘 띄는 직관적인 파란색 단추형 링크 */
-    .action-link {
+    .btn-redirect {
         display: inline-block;
-        font-size: 14px;
+        font-size: 13.5px;
         font-weight: 700;
         color: #FFFFFF !important;
-        background-color: #0D6EFD;
+        background-color: #2563EB;
         padding: 8px 16px;
         border-radius: 6px;
         text-decoration: none !important;
     }
-    .action-link:hover {
-        background-color: #0B5ED7;
+    .btn-redirect:hover {
+        background-color: #1D4ED8;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. 메인 타이틀 영역
+# 3. 군더더기 없는 헤더 배치
 st.markdown("""
-    <div class='header-box'>
-        <div class='header-title'>AI 에이전트 기술 동향 리포트</div>
-        <div class='header-subtitle'>실무자를 위한 카테고리별 인공지능 트렌드 핵심 요약</div>
+    <div class='title-area'>
+        <div class='main-title'>AI 에이전트 브리핑</div>
+        <div class='main-subtitle'>글로벌 최신 동향과 현업 인사이트</div>
     </div>
 """, unsafe_allow_html=True)
 
-# 4. 사이드바 필터 메뉴
-st.sidebar.markdown("### 🔍 데이터 필터링")
-search_query = st.sidebar.text_input("키워드로 찾기", "", placeholder="검색어를 입력하세요...")
-category = st.sidebar.selectbox(
-    "카테고리 변경",
+# 4. 사이드바 컨트롤러
+st.sidebar.markdown("### 🔍 검색 및 필터")
+query_input = st.sidebar.text_input("키워드 검색", "", placeholder="검색어를 입력하세요...")
+category_filter = st.sidebar.selectbox(
+    "기술 분류 선택",
     ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"]
 )
+
 st.sidebar.markdown("---")
-
 with st.sidebar:
-    if st.button("🔄 최신 데이터 불러오기", use_container_width=True):
-        with st.spinner("정보 업데이트 중..."):
+    if st.button("🔄 실시간 동기화", use_container_width=True):
+        with st.spinner("업데이트 중..."):
             time.sleep(1)
-        st.toast("동향 리포트가 최신화되었습니다.", icon="📝")
+        st.toast("동향 리포트가 최신화되었습니다.", icon="✅")
 
-# 5. [사용자 친화적 항목별 요약] 대폭 길어지고 명확해진 카테고리별 요약 문구
-category_summaries = {
+# 5. 카테고리별 요약 문구
+summary_data = {
     "전체 보기": """
-        <div class='summary-item'>✅ <strong>기술 패러다임의 대전환:</strong> 이제 인공지능은 단순히 질문에 대답하는 챗봇 단계를 지나, 스스로 판단하고 행동하여 업무를 완결하는 <strong>'자율형 에이전트'</strong> 체제로 완전히 진화했습니다.</div>
-        <div class='summary-item'>✅ <strong>업무 자동화 시장의 지각변동:</strong> 사전에 지정된 규칙만 따르던 기존의 매크로(VBA)나 RPA 시스템이, 비정형 문서와 돌발 상황까지 처리할 수 있는 대규모 AI 에이전트 기반 인프라로 빠르게 대체되는 추세입니다.</div>
-        <div class='summary-item'>✅ <strong>협업형 멀티 에이전트의 확산:</strong> 하나의 거대한 AI 모델에게 모든 일을 시키는 것보다 기획, 코딩, 검증 등 역할을 세분화한 여러 개의 작은 AI 에이전트들을 유기적으로 협업시키는 구조가 실무 표준으로 정착되었습니다.</div>
+        <div class='summary-bullet'>🔹 <b>비즈니스 패러다임 전환:</b> AI 시장이 단순 질문-답변을 넘어 복잡한 목표를 스스로 판단 및 완결하는 '자율형 에이전트' 체제로 진화했습니다.</div>
+        <div class='summary-bullet'>🔹 <b>레거시 자동화의 대체:</b> 고정된 구조로 구동되어 UI 변화에 취약하던 기존의 매크로(VBA), RPA 인프라가 유연한 인공지능 기반의 아키텍처로 대체되고 있습니다.</div>
+        <div class='summary-bullet'>🔹 <b>오케스트레이션의 표준화:</b> 거대한 단일 모델을 구동하는 대신 전문 태스크를 가진 소형 독립 에이전트 다수를 묶어 협업시키는 멀티 에이전트 모델이 주류로 안착했습니다.</div>
     """,
     "🛠️ 오픈소스 에이전트 프레임워크": """
-        <div class='summary-item'>✅ <strong>에이전트 조립 도구의 경쟁 심화:</strong> 개발자가 비즈니스 흐름에 맞춰 AI의 행동 반경을 직접 제어하고 설계할 수 있는 모듈형 프레임워크 아키텍처 기술이 나날이 고도화되고 있습니다.</div>
-        <div class='summary-item'>✅ <strong>대화 메모리(Memory) 레이어 강화:</strong> 여러 AI 에이전트가 소통할 때 정보가 유실되지 않도록, 별도의 데이터베이스와 연동하여 과거의 작업 히스토리를 기억하는 장기 기억 보존력이 대폭 개선되었습니다.</div>
-        <div class='summary-item'>✅ <strong>실무 개발 공수 절감 효과:</strong> 에이전트 구축 프로세스가 표준화되면서 현업 엔지니어들이 업무 자동화 파이프라인을 빌드하는 데 걸리는 시간과 노력이 기존 대비 <strong>40% 이상 크게 단축</strong>되었습니다.</div>
+        <div class='summary-bullet'>🔹 <b>다중 모듈 연동 체계 수립:</b> 개별 에이전트의 페르소나를 정의하고 행동 파이프라인을 체계적으로 제어할 수 있는 오픈소스 개발 프레임워크 경쟁이 치열합니다.</div>
+        <div class='summary-bullet'>🔹 <b>메모리 유실 오류 최소화:</b> 상호 대화 과정에서 정보가 손실되던 메모리 레이어를 독립형 데이터베이스와 바인딩하여 복잡한 실무 컨텍스트 유지력을 강화했습니다.</div>
+        <div class='summary-bullet'>🔹 <b>개발 주기 단축 체감:</b> 코어 아키텍처가 프레임워크 단위로 표준화되면서 업무 에이전트 빌드를 위한 현업 엔지니어의 코딩 분량이 40% 이상 감소했습니다.</div>
     """,
     "🏢 기업 업무 자동화 에이전트": """
-        <div class='summary-item'>✅ <strong>회사 핵심 인프라와의 연동:</strong> 사내 매뉴얼을 단순히 검색해서 띄워주는 수준을 넘어, 이제는 실제 전사적자원관리(ERP)나 고객관계관리(CRM) 시스템의 API를 AI가 직접 제어하여 자율적으로 데이터를 처리합니다.</div>
-        <div class='summary-item'>✅ <strong>돌발 상황 자율 대처 능력:</strong> 에러가 나면 멈추던 기존 매크로와 달리, 사전에 정의되지 않은 예외적인 비즈니스 오류가 발생하더라도 AI가 스스로 대안을 탐색하여 중단 없이 업무를 완결짓습니다.</div>
-        <div class='summary-item'>✅ <strong>전사적 도구의 통합 파이프라인:</strong> 엑셀 내부에 갇혀있던 업무 처리 한계를 깨고 이메일 수신 확인부 터 보고서 자동 작성, 결제 시스템 승인 요청까지 전사 도구들을 하나로 묶는 강력한 자동화가 실현되고 있습니다.</div>
+        <div class='summary-bullet'>🔹 <b>전사 시스템 직접 제어:</b> 단순 사내 문서를 요약 및 검색하여 띄우던 초기 모델을 넘어 내부 ERP, CRM 등 주요 레거시 시스템의 데이터 처리 권한을 위임받는 수준에 이르렀습니다.</div>
+        <div class='summary-bullet'>🔹 <b>자율 예외 분기 처리:</b> 알 수 없는 비즈니스 조건이나 에러 발생 시 멈추는 매크로와 달리 AI가 원인을 스스로 판단하고 정정하여 태스크를 지속 완결합니다.</div>
+        <div class='summary-bullet'>🔹 <b>데스크톱 자동화 확장:</b> 이메일 수신부터 발주서 생성, 회계 보고서 자동 취합 및 결제 시스템 상신까지 전사 도구를 유기적으로 묶는 강력한 자동화가 도입되고 있습니다.</div>
     """,
     "🖥️ 자율형 웹/OS 브라우징 에이전트": """
-        <div class='summary-item'>✅ <strong>인간과 동일한 화면 인식 기술:</strong> 개발자용 API나 소스 코드가 제공되지 않는 낙후된 구형 프로그램이더라도, AI가 모니터 화면을 눈으로 보듯 캡처하여 마우스 클릭과 키보드 입력을 정확하게 수행합니다.</div>
-        <div class='summary-item'>✅ <strong>UI 디자인 변동에 대한 유연성:</strong> 웹페이지의 단추 위치나 메뉴 레이아웃이 조금만 바뀌어도 오작동하던 기존 크롤러나 매크로와 다르게, 시각 인식 모델을 기반으로 상황에 맞춰 막힘없이 유연하게 대처합니다.</div>
-        <div class='summary-item'>✅ <strong>가상 업무 비서 시대의 도래:</strong> 앤트로픽의 'Computer Use' 같은 기술의 등장으로 사무직 직원들이 하루 종일 컴퓨터 앞에서 수행하는 단순 반복 동작들을 완벽하게 대행하는 서비스가 상용화 단계에 접수되었습니다.</div>
+        <div class='summary-bullet'>🔹 <b>비정형 시각 인지 인터페이스:</b> 전용 API 접근 권한이 전무한 구형 시스템이라도 모니터 화면 자체를 비전 모델로 분석하여 인간과 똑같이 마우스와 키보드를 조작합니다.</div>
+        <div class='summary-bullet'>🔹 <b>동적 웹 구조 복구 안정성:</b> 웹페이지 배치가 임의로 변경되면 정지하던 스크래퍼 방식과 달리 상황에 유연하게 대처하여 올바른 경로를 자율적으로 재탐색합니다.</div>
+        <div class='summary-bullet'>🔹 <b>가상 디지털 노동력 확보:</b> 앤드로픽의 크롬/OS 제어 기술을 시작으로 가상 데스크톱 내 단순 반복 사무 처리를 인간의 감독하에 완전 전가할 수 있는 기술적 토대가 완성되었습니다.</div>
     """
 }
 
-# 상단 요약 섹션 출력
 st.markdown(f"""
-    <div class='summary-card'>
-        <div class='summary-title'>📢 [핵심 요약] {category} 한눈에 보기</div>
-        {category_summaries[category]}
+    <div class='summary-container'>
+        <div class='summary-heading'>📢 {category_filter} 핵심 요약 및 현업 리포트</div>
+        {summary_data[category_filter]}
     </div>
 """, unsafe_allow_html=True)
 
-# 6. 상세 뉴스 및 원문 연동 데이터 세트
-ai_news_data = [
+# 6. 상세 뉴스 데이터셋
+news_repository = [
     {
-        "title": "LangChain 기반 다중 에이전트(Multi-Agent) 협업 툴킷 업데이트",
+        "title": "LangChain 기반 다중 에이전트(Multi-Agent) 협업 워크플로우 툴킷 출시",
         "category": "🛠️ 오픈소스 에이전트 프레임워크",
         "source": "LangChain Blog",
         "time": "15분 전",
-        "content": "개발자들이 복잡한 비즈니스 워크플로우를 유연하게 자동화할 수 있도록 여러 개의 AI 에이전트가 상호 작용하며 문제를 해결하는 멀티 에이전트 아키텍처가 업데이트되었습니다. 기획, 코딩, 테스트 에이전트가 각자 역할을 맡아 순차적으로 결과물을 도출합니다.",
-        "summary": "에이전트 간 메모리 공유 및 역할 분담 체계 표준화로 전체 업무 파이프라인의 시스템 안정성 확보.",
+        "content": "비즈니스 프로세스를 단계별로 자율화하기 위해 기획, 코딩, 품질 검증 등 역할이 철저히 개인화된 복수의 AI 에이전트가 협업하며 연쇄적으로 결과물을 도출하는 프레임워크 아키텍처가 정식 공개되었습니다.",
+        "insight": "에이전트 간 메모리 공유 레이어 표준화로 전체 자동화 파이프라인의 안전성 확보.",
         "url": "https://langchain.com"
     },
     {
-        "title": "세일즈포스, 기업 전용 자율형 Agentforce 솔루션 전면 도입 성과 발표",
+        "title": "세일즈포스, 기업 데이터베이스 결합형 자율 에이전트 'Agentforce Operations' 전면 확대",
         "category": "🏢 기업 업무 자동화 에이전트",
         "source": "TechCrunch",
         "time": "2시간 전",
-        "content": "정해진 시나리오 답변에 의존하던 기존 챗봇의 한계를 극복하고, 사내 매뉴얼과 실시간 고객 데이터를 바탕으로 스스로 판단하여 환불 절차 및 기술 상담을 자율적으로 처리하는 기업 전용 솔루션이 도입 성과를 발표했습니다.",
-        "summary": "단순 상담을 넘어 백오피스 시스템과 결합해 실질적인 결제 및 데이터 정산 업무까지 스스로 완결하는 구조.",
+        "content": "정형화된 조건 분기 챗봇을 극복하고 사내 매뉴얼과 실시간 기업 인프라 데이터를 유기적으로 판독하여 정산 업무, 고객의 클레임 처리, 데이터 검증 및 백오피스 병목을 스스로 처리하는 시스템이 글로벌 기업에 대거 도입되었습니다.",
+        "insight": "단순 문서 검색 단계를 넘어서 API 연동 기반의 자율 트랜잭션을 완결하는 엔터프라이즈 구조 확립.",
         "url": "https://techcrunch.com"
     },
     {
-        "title": "앤트로픽(Anthropic), 사람처럼 PC를 자율 제어하는 'Computer Use' API 업그레이드",
+        "title": "앤트로픽, 모바일 지시 제어 기반 데스크톱 자율 조작 'Computer Use' 기능 업데이트",
         "category": "🖥️ 자율형 웹/OS 브라우징 에이전트",
         "source": "Wired",
         "time": "5시간 전",
-        "content": "AI 에이전트가 PC 모니터 화면을 실시간 스크린샷으로 캡처하여 마우스 커서의 좌표를 계산하고 클릭하며, 텍스트 상자에 타이핑하는 기술이 한 단계 진화했습니다. 파일 다운로드 및 크로스 브라우징 이메일 전송 등을 안정적으로 구현합니다.",
-        "summary": "화면의 UI 구조나 버튼 위치가 변경되어도 시각 정보 바탕으로 유연한 대처 가능 (기존 매크로의 완전한 상위 호환 기술).",
+        "content": "모니터 화면을 실시간 단위로 스냅샷 캡처하여 마우스 좌표를 연산 및 클릭하고, 텍스트 레이아웃을 식별해 타이핑하는 기술이 한층 더 정교해졌습니다. 이제 스마트폰 메신저 연동만으로 원격지에 배치된 업무용 PC의 복잡한 엑셀 취합 업무 처리를 가상 에이전트에게 전가할 수 있습니다.",
+        "insight": "화면 UI 구조 및 버튼의 위치가 불규칙하게 변형되어도 유연하게 복구하는 기존 매크로의 상위 호환 아키텍처.",
         "url": "https://wired.com"
+    },
+    {
+        "title": "Microsoft AutoGen, 자율형 비정형 데이터 가공용 복합 에이전트 파이프라인 고도화",
+        "category": "🛠️ 오픈소스 에이전트 프레임워크",
+        "source": "MS Developer Group",
+        "time": "1일 전",
+        "content": "다양한 모델 종류(LLM, 비전, 임베딩)들이 상호 유기적인 스레드로 동기화되어 사람이 개입하지 않는 대규모 비정형 보고서 마이그레이션 업무를 성공적으로 조율하는 프레임워크 신규 엔진 패치가 적용되었습니다.",
+        "insight": "코드 인터프리터 샌드박스가 결합되어 가동 중 수식 오류 발생 시 스스로 코드를 디버깅 및 재생성하는 루프 지원.",
+        "url": "https://github.com"
+    },
+    {
+        "title": "구글 클라우드, 전사적 자원 관리 시스템(ERP) 바인딩용 자율 의사결정 에이전트 킷 발표",
+        "category": "🏢 기업 업무 자동화 에이전트",
+        "source": "Google Cloud Insights",
+        "time": "2일 전",
+        "content": "구글 워크스페이스 생태계 및 외부 클라우드 플랫폼 인프라를 직접 연동하는 기업 특화형 툴셋입니다. 물류, 재고 관리, 발주 대기열 취합 시 AI 에이전트가 시장 단가 추이를 자율 추적하여 매입 결정을 내리는 시스템 시연이 완료되었습니다.",
+        "insight": "매크로가 건드리지 못하던 글로벌 외부 웹 데이터 정보 실시간 반영 및 권한 거버넌스 제어 기능 제공.",
+        "url": "https://google.com"
+    },
+    {
+        "title": "OpenAI, 크롬 브라우저 자율 실행 및 범용 웹 태스크 대행 'Operator' 정식 업데이트 개시",
+        "category": "🖥️ 자율형 웹/OS 브라우징 에이전트",
+        "source": "Bloomberg Technology",
+        "time": "3일 전",
+        "content": "사용자의 단순 텍스트 목표지정 명령어 하나로 크롬 브라우저 창을 자율 인스턴스로 분리 생성한 뒤, 해외 항공권 비교 분석부터 예약, 기업 정보 백그라운드 리서치 및 엑셀 다운로드 파일 생성까지 마우스 컨트롤 없이 실행하는 범용 비서가 상용화 궤도에 진입했습니다.",
+        "insight": "단순 챗봇 인터페이스의 종말을 선언하고 웹 브라우저 기반의 자율 행동 경제 체제로의 도래 증명.",
+        "url": "https://bloomberg.com"
     }
 ]
 
-# 7. 하단 상세 카드 출력 섹션
-for news in ai_news_data:
-    category_match = (category == "전체 보기" or news["category"] == category)
-    search_match = (search_query.lower() in news["title"].lower() or 
-                    search_query.lower() in news["content"].lower())
+# 7. 하단 상세 카드 리스트 렌더링 파트
+content_found = False
+
+for item in news_repository:
+    is_category_valid = (category_filter == "전체 보기" or item["category"] == category_filter)
+    is_keyword_valid = (query_input.lower() in item["title"].lower() or 
+                        query_input.lower() in item["content"].lower() or
+                        query_input.lower() in item["insight"].lower())
     
-    if category_match and search_match:
+    if is_category_valid and is_keyword_valid:
+        content_found = True
         st.markdown(f"""
-            <div class='detail-card'>
-                <div class='meta-row'>
-                    <span class='badge-category'>{news['category']}</span>
-                    <span class='badge-source'>🌐 {news['source']}</span>
-                    <span class='badge-time'>🕒 {news['time']}</span>
+            <div class='content-box'>
+                <div class='content-meta'>
+                    <span class='lbl-category'>{item['category']}</span>
+                    <span class='lbl-source'>🌐 {item['source']}</span>
+                    <span class='lbl-time'>{item['time']}</span>
                 </div>
-                <div class='detail-title'>{news['title']}</div>
-                <div class='detail-content'>{news['content']}</div>
-                <div class='insight-box'>
-                    <strong>💡 현업 적용 포인트:</strong> {news['summary']}
-                </div>
-                <div style='margin-top: 15px;'>
-                    <a href='{news['url']}' target='_blank' class='action-link'>🔗 원문 기사 링크 이동</a>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+                <div class='content-title'>{item['title']}</div>
+                <div class='content-body'>{item['content']}</div>
+                <div class='insight-sticker'>
