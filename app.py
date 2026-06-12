@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# [교정 ①] 페이지 설정 오작동 방지를 위해 스크립트 최상단 고정
+# 1. 페이지 초기 설정 및 와이드 레이아웃 구성
 st.set_page_config(
     page_title="AI Agent Briefing", 
     page_icon="📝", 
@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# [교정 ②] HTML 마크다운 꼬임 방지를 위한 스타일 시트 일괄 정돈
+# 2. 가독성과 고대비 시인성을 극대화한 커스텀 스타일시트
 st.markdown("""
     <style>
     @import url('https://googleapis.com');
@@ -137,7 +137,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. 사이드바 컨트롤러 ([교정 ③] 중복 충돌을 원천 차단하기 위해 고유 key값 지정)
+# 4. 사이드바 컨트롤러 (중복 충돌 방지 고유 key값 지정)
 st.sidebar.markdown("### 🔍 검색 및 필터")
 query_input = st.sidebar.text_input("키워드 검색", "", placeholder="검색어를 입력하세요...", key="search_bar_unique")
 category_filter = st.sidebar.selectbox(
@@ -263,3 +263,5 @@ for item in news_repository:
                 <div class='content-title'>{item['title']}</div>
                 <div class='content-body'>{item['content']}</div>
                 <div class='insight-sticker'>
+                    📌 <b>현업 매니저 분석 :</b> {item['insight']}
+                </div>
