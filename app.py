@@ -2,33 +2,67 @@ import streamlit as st
 import time
 
 # 1. 브라우저 레이아웃 및 탭 설정
-st.set_page_config(page_title="AI Agent Intelligence", page_icon="🧬", layout="wide")
+st.set_page_config(page_title="AI Agent Trends", page_icon="🧬", layout="wide")
 
-# 2. 애플 감성 미니멀리즘 CSS 디자인
+# 2. 애플 감성 미니멀리즘 CSS 디자인 (타이틀 하이라이트 강화)
 st.markdown("""
     <style>
     @import url('https://googleapis.com');
     
     .main .block-container {
         font-family: 'Inter', -apple-system, sans-serif !important;
-        padding-top: 2.5rem;
+        padding-top: 3rem;
         padding-bottom: 3rem;
-        max-width: 850px;
+        max-width: 800px;
+    }
+    
+    /* 타이틀 강력 하이라이트 효과 (네온 민트 그라데이션) */
+    .app-title-container {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 20px 0;
     }
     .app-title {
-        font-size: 34px !important;
-        font-weight: 700 !important;
+        font-size: 42px !important;
+        font-weight: 800 !important;
         color: #111111;
-        letter-spacing: -0.8px;
-        margin-bottom: 6px;
-        text-align: center;
+        letter-spacing: -1.5px;
+        line-height: 1.2;
+    }
+    .app-title span {
+        background: linear-gradient(120deg, #00FFCC 0%, #0066CC 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     .app-subtitle {
         font-size: 15px;
         color: #666666;
-        text-align: center;
-        margin-bottom: 35px;
+        margin-top: 12px;
     }
+    
+    /* 최신 트렌드 서머리 박스 (가장 상단 요약용) */
+    .trend-summary-card {
+        background: #F5F5F7;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 40px;
+        border: none;
+    }
+    .trend-summary-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111111;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    .trend-summary-body {
+        font-size: 14.5px;
+        color: #333333;
+        line-height: 1.6;
+    }
+
+    /* 하단 상세 뉴스 카드 디자인 */
     .agent-card {
         background: #ffffff;
         padding: 26px 0px;
@@ -75,24 +109,17 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. 상단 타이틀
-st.markdown("<div class='app-title'>AI Agent Intelligence</div>", unsafe_allow_html=True)
-st.markdown("<div class='app-subtitle'>글로벌 에이전트 구축 트렌드 및 기술 분석 대시보드</div>", unsafe_allow_html=True)
+# 3. 상단 하이라이트 타이틀 영역
+st.markdown("""
+    <div class='app-title-container'>
+        <div class='app-title'>AI Agent <span>Intelligence</span></div>
+        <div class='app-subtitle'>글로벌 에이전트 구축 기술동향 핵심 브리핑 시스템</div>
+    </div>
+""", unsafe_allow_html=True)
 
-# 4. 보완 포인트 ①: 대시보드 상단에 시각적 통계 지표(Metrics) 배치
-# 발표할 때 "현재 수집된 에이전트 동향 지표입니다" 하고 브리핑하기 좋습니다.
-m1, m2, m3 = st.columns(3)
-m1.metric(label="📊 이번 주 분석 에이전트", value="147 건", delta="+24건")
-m2.metric(label="⚡ 평균 자동화 효율성", value="42.5 %", delta="+3.8%")
-m3.metric(label="🔒 보안 검증 통과율", value="99.2 %", delta="정상")
-st.markdown("<br>", unsafe_allow_html=True)
-
-# 5. 사이드바 검색 및 필터 레이아웃
+# 4. 사이드바 검색 및 카테고리 필터
 st.sidebar.markdown("### 🔍 Filter")
-
-# 보완 포인트 ②: 키워드 검색창 추가 (VBA의 실시간 텍스트 필터 기능 구현)
 search_query = st.sidebar.text_input("💡 키워드 검색", "", placeholder="검색어를 입력하세요...")
-
 category = st.sidebar.selectbox(
     "카테고리 선택",
     ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"]
@@ -103,9 +130,25 @@ with st.sidebar:
     if st.button("🔄 실시간 동기화", use_container_width=True):
         with st.spinner("수집 중..."):
             time.sleep(1)
-        st.toast("최신 정보를 동기화했습니다.", icon="✅")
+        st.toast("최신 기술 동향을 업데이트했습니다.", icon="✅")
 
-# 6. 트렌디한 실제 최신 에이전트 데이터 세트
+# 5. 카테고리별 동향 요약 데이터 정의 (대시보드 지표 대신 들어간 상단 텍스트 요약)
+category_summaries = {
+    "전체 보기": "현재 글로벌 AI 시장은 단순 챗봇 단계를 넘어 스스로 판단하고 행동하는 '자율형 에이전트(Agent)'로 패러다임이 완전히 전환되었습니다. 인프라 구축을 위한 오픈소스 프레임워크부터 PC를 제어하는 OS 브라우징까지 다각도로 고도화가 진행 중입니다.",
+    "🛠️ 오픈소스 에이전트 프레임워크": "개발자들이 에이전트를 조립할 수 있는 아키텍처 경쟁이 치열합니다. 최근 트렌드는 단일 AI가 아닌, '기획-코딩-검증' 등 역할을 쪼갠 멀티 에이전트(Multi-Agent) 간의 기억(Memory) 공유 공유 메커니즘 고도화에 집중되어 있습니다.",
+    "🏢 기업 업무 자동화 에이전트": "엔터프라이즈 부문에서는 고정된 규칙(Rule) 기반의 매크로 시스템을 대체하기 시작했습니다. 내부 데이터베이스(ERP/CRM)를 API로 연동하여 스스로 권한을 갖고 비즈니스 프로세스를 완결짓는 자율 업무 에이전트가 주류로 자리 잡고 있습니다.",
+    "🖥️ 자율형 웹/OS 브라우징 에이전트": "가장 파괴적인 최신 분야입니다. AI가 화면 시각 정보를 인식하여 인간처럼 마우스를 클릭하고 키보드를 타이핑하는 기술이 상용화 단계에 진입했으며, 이는 UI 구조가 바뀌어도 유연하게 대응하는 차세대 자동화 인프라의 핵심입니다."
+}
+
+# 상단 카테고리별 요약 파트 띄우기
+st.markdown(f"""
+    <div class='trend-summary-card'>
+        <div class='trend-summary-title'>🧬 {category} 부문 최신 기술 트렌드 요약</div>
+        <div class='trend-summary-body'>{category_summaries[category]}</div>
+    </div>
+""", unsafe_allow_html=True)
+
+# 6. 상세 뉴스 및 원문 연동 데이터 세트
 ai_news_data = [
     {
         "title": "LangChain 기반 다중 에이전트(Multi-Agent) 협업 툴킷 업데이트",
@@ -136,14 +179,11 @@ ai_news_data = [
     }
 ]
 
-# 7. 보완 포인트 ③: 카테고리 필터와 텍스트 검색을 동시에 반영하는 필터링 로직
+# 7. 필터링 및 하단 상세 카드 출력 섹션
 has_content = False
 
 for news in ai_news_data:
-    # 카테고리 매칭 확인
     category_match = (category == "전체 보기" or news["category"] == category)
-    
-    # 검색어 매칭 확인 (제목이나 내용에 검색어가 포함되어 있는지 체크)
     search_match = (search_query.lower() in news["title"].lower() or 
                     search_query.lower() in news["content"].lower())
     
