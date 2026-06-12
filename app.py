@@ -1,151 +1,379 @@
 import streamlit as st
 import time
+from collections import Counter
+from datetime import datetime, timedelta, timezone
 
-# 1. 시스템 초기 설정 및 와이드 레이아웃 구성
+
+KST = timezone(timedelta(hours=9))
+IS_SAMPLE_DATA = True
+
+
 st.set_page_config(
-    page_title="AI Agent Briefing", 
-    page_icon="📝", 
+    page_title="AI Agent Briefing",
+    page_icon="🧭",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# 2. 담백하고 직관적인 텍스트 타이틀 배정 (HTML 태그 완전 배제)
-st.title("📝 AI 에이전트 브리핑")
-st.text("글로벌 최신 동향과 현업 인사이트를 전해드립니다.")
-st.divider() # 안전한 대시보드 가로 구분선
 
-# 3. 사이드바 컨트롤러 (검색창 및 카테고리 필터)
-st.sidebar.markdown("### 🔍 검색 및 필터")
-query_input = st.sidebar.text_input("💡 키워드 검색", "", placeholder="검색어를 입력하세요...", key="search_final_v2")
-category_filter = st.sidebar.selectbox(
-    "📂 기술 분류 선택",
-    ["전체 보기", "🛠️ 오픈소스 에이전트 프레임워크", "🏢 기업 업무 자동화 에이전트", "🖥️ 자율형 웹/OS 브라우징 에이전트"],
-    key="select_final_v2"
-)
+CATEGORY_ALL = "전체 보기"
 
-st.sidebar.divider()
-with st.sidebar:
-    if st.button("🔄 실시간 동기화", use_container_width=True, key="btn_sync_final_v2"):
-        with st.spinner("정보를 동기화하는 중..."):
-            time.sleep(0.3)
-        st.toast("동향 리포트가 최신화되었습니다.", icon="✅")
-
-# 4. 카테고리별 핵심 요약 브리핑 문구 정의
-summary_data = {
-    "전체 보기": [
-        "• 비즈니스 패러다임 전환: AI 시장이 단순 질문-답변을 넘어 복잡한 목표를 스스로 판단 및 완결하는 '자율형 에이전트' 체제로 진화했습니다.",
-        "• 레거시 자동화의 대체: 고정된 구조로 구동되어 UI 변화에 취약하던 기존의 매크로(VBA), RPA 인프라가 유연한 인공지능 기반의 아키텍처로 대체되고 있습니다.",
-        "• 오케스트레이션의 표준화: 거대한 단일 모델을 구동하는 대신 전문 태스크를 가진 소형 독립 에이전트 다수를 묶어 협업시키는 멀티 에이전트 모델이 주류로 안착했습니다."
-    ],
-    "🛠️ 오픈소스 에이전트 프레임워크": [
-        "• 다중 모듈 연동 체계 수립: 개별 에이전트의 페르소나를 정의하고 행동 파이프라인을 체계적으로 제어할 수 있는 오픈소스 개발 프레임워크 경쟁이 치열합니다.",
-        "• 메모리 유실 오류 최소화: 상호 대화 과정에서 정보가 손실되던 메모리 레이어를 독립형 데이터베이스와 바인딩하여 복잡한 실무 컨텍스트 유지력을 강화했습니다.",
-        "• 개발 주기 단축 체감: 코어 아키텍처가 프레임워크 단위로 표준화되면서 업무 에이전트 빌드를 위한 현업 엔지니어의 코딩 분량이 40% 이상 감소했습니다."
-    ],
-    "🏢 기업 업무 자동화 에이전트": [
-        "• 전사 시스템 직접 제어: 단순 사내 문서를 요약 및 검색하여 띄우던 초기 모델을 넘어 내부 ERP, CRM 등 주요 레거시 시스템의 데이터 처리 권한을 위임받는 수준에 이르렀습니다.",
-        "• 자율 예외 분기 처리: 알 수 없는 비즈니스 조건이나 에러 발생 시 멈추는 매크로와 달리 AI가 원인을 스스로 판단하고 정정하여 태스크를 지속 완결합니다.",
-        "• 데스크톱 자동화 확장: 이메일 수신부터 발주서 생성, 회계 보고서 자동 취합 및 결제 시스템 상신까지 전사 도구를 유기적으로 묶는 강력한 자동화가 도입되고 있습니다."
-    ],
-    "🖥️ 자율형 웹/OS 브라우징 에이전트": [
-        "• 비정형 시각 인지 인터페이스: 전용 API 접근 권한이 전무한 구형 시스템이라도 모니터 화면 자체를 비전 모델로 분석하여 인간과 똑같이 마우스와 키보드를 조작합니다.",
-        "• 동적 웹 구조 복구 안정성: 웹페이지 배치가 임의로 변경되면 정지하던 스크래퍼 방식과 달리 상황에 유연하게 대처하여 올바른 경로를 자율적으로 재탐색합니다.",
-        "• 가상 디지털 노동력 확보: 앤드로픽의 크롬/OS 제어 기술을 시작으로 가상 데스크톱 내 단순 반복 사무 처리를 인간의 감독하에 완전 전가할 수 있는 기술적 토대가 완성되었습니다."
-    ]
-}
-
-# 상단 요약 텍스트 출력 (가장 에러 없는 마크다운 방식 채택)
-st.subheader(f"📢 {category_filter} 부문 핵심 요약")
-for bullet in summary_data[category_filter]:
-    st.write(bullet)
-
-st.text("")
-st.text("")
-st.subheader("📋 실시간 기술 동향 상세 리포트")
-st.divider()
-
-# 5. 수집된 최신 AI 에이전트 상세 뉴스 데이터셋 (6개 카드 상자 알맹이)
-news_repository = [
-    {
-        "title": "LangChain 기반 다중 에이전트(Multi-Agent) 협업 워크플로우 툴킷 출시",
-        "category": "🛠️ 오픈소스 에이전트 프레임워크",
-        "source": "LangChain Blog",
-        "time": "15분 전",
-        "content": "비즈니스 프로세스를 단계별로 자율화하기 위해 기획, 코딩, 품질 검증 등 역할이 철저히 개인화된 복수의 AI 에이전트가 협업하며 연쇄적으로 결과물을 도출하는 프레임워크 아키텍처가 정식 공개되었습니다.",
-        "insight": "에이전트 간 메모리 공유 레이어 표준화로 전체 자동화 파이프라인의 안전성 확보.",
-        "url": "https://langchain.com"
-    },
-    {
-        "title": "세일즈포스, 기업 데이터베이스 결합형 자율 에이전트 'Agentforce Operations' 전면 확대",
-        "category": "🏢 기업 업무 자동화 에이전트",
-        "source": "TechCrunch",
-        "time": "2시간 전",
-        "content": "정형화된 조건 분기 챗봇을 극복하고 사내 매뉴얼과 실시간 기업 인프라 데이터를 유기적으로 판독하여 정산 업무, 고객의 클레임 처리, 데이터 검증 및 백오피스 병목을 스스로 처리하는 시스템이 글로벌 기업에 대거 도입되었습니다.",
-        "insight": "단순 문서 검색 단계를 넘어서 API 연동 기반의 자율 트랜잭션을 완결하는 엔터프라이즈 구조 확립.",
-        "url": "https://techcrunch.com"
-    },
-    {
-        "title": "앤트로픽, 모바일 지시 제어 기반 데스크톱 자율 조작 'Computer Use' 기능 업데이트",
-        "category": "🖥️ 자율형 웹/OS 브라우징 에이전트",
-        "source": "Wired",
-        "time": "5시간 전",
-        "content": "모니터 화면을 실시간 단위로 스냅샷 캡처하여 마우스 좌표를 연산 및 클릭하고, 텍스트 레이아웃을 식별해 타이핑하는 기술이 한층 더 정교해졌습니다. 이제 스마트폰 메신저 연동만으로 원격지에 배치된 업무용 PC의 복잡한 엑셀 취합 업무 처리를 가상 에이전트에게 전가할 수 있습니다.",
-        "insight": "화면 UI 구조 및 버튼의 위치가 불규칙하게 변형되어도 유연하게 복구하는 기존 매크로의 상위 호환 아키텍처.",
-        "url": "https://wired.com"
-    },
-    {
-        "title": "Microsoft AutoGen, 자율형 비정형 데이터 가공용 복합 에이전트 파이프라인 고도화",
-        "category": "🛠️ 오픈소스 에이전트 프레임워크",
-        "source": "MS Developer Group",
-        "time": "1일 전",
-        "content": "다양한 모델 종류(LLM, 비전, 임베딩)들이 상호 유기적인 스레드로 동기화되어 사람이 개입하지 않는 대규모 비정형 보고서 마이그레이션 업무를 성공적으로 조율하는 프레임워크 신규 엔진 패치가 적용되었습니다.",
-        "insight": "코드 인터프리터 샌드박스가 결합되어 가동 중 수식 오류 발생 시 스스로 코드를 디버깅 및 재생성하는 루프 지원.",
-        "url": "https://github.com"
-    },
-    {
-        "title": "구글 클라우드, 전사적 자원 관리 시스템(ERP) 바인딩용 자율 의사결정 에이전트 킷 발표",
-        "category": "🏢 기업 업무 자동화 에이전트",
-        "source": "Google Cloud Insights",
-        "time": "2일 전",
-        "content": "구글 워크스페이스 생태계 및 외부 클라우드 플랫폼 인프라를 직접 연동하는 기업 특화형 툴셋입니다. 물류, 재고 관리, 발주 대기열 취합 시 AI 에이전트가 시장 단가 추이를 자율 추적하여 매입 결정을 내리는 시스템 시연이 완료되었습니다.",
-        "insight": "매크로가 건드리지 못하던 글로벌 외부 웹 데이터 정보 실시간 반영 및 권한 거버넌스 제어 기능 제공.",
-        "url": "https://google.com"
-    },
-    {
-        "title": "OpenAI, 크롬 브라우저 자율 실행 및 범용 웹 태스크 대행 'Operator' 정식 업데이트 개시",
-        "category": "🖥️ 자율형 웹/OS 브라우징 에이전트",
-        "source": "Bloomberg Technology",
-        "time": "3일 전",
-        "content": "사용자의 단순 텍스트 목표지정 명령어 하나로 크롬 브라우저 창을 자율 인스턴스로 분리 생성한 뒤, 해외 항공권 비교 분석부터 예약, 기업 정보 백그라운드 리서치 및 엑셀 다운로드 파일 생성까지 마우스 컨트롤 없이 실행하는 범용 비서가 상용화 궤도에 진입했습니다.",
-        "insight": "단순 챗봇 인터페이스의 종말을 선언하고 웹 브라우저 기반의 자율 행동 경제 체제로의 도래 증명.",
-        "url": "https://bloomberg.com"
-    }
+CATEGORIES = [
+    "🛠️ 오픈소스 에이전트 프레임워크",
+    "🏢 기업 업무 자동화 에이전트",
+    "🖥️ 자율형 웹/OS 브라우징 에이전트",
 ]
 
-# 6. 하단 상세 카드 리스트 안전 렌더링 구역 (순수 스트림릿 기능만 사용)
-content_found = False
+SUMMARY_DATA = {
+    CATEGORY_ALL: [
+        "AI Agent 시장은 단순 질의응답형 챗봇에서 벗어나, 목표를 이해하고 여러 도구를 호출하며 업무 단계를 이어가는 실행형 구조로 이동하고 있습니다.",
+        "기업 적용 관점에서는 RAG, 도구 호출, 권한 관리, 평가 체계, 운영 모니터링이 함께 묶여야 실제 업무 자동화로 이어집니다.",
+        "최근 구조 설계의 핵심은 하나의 거대한 에이전트가 모든 일을 처리하는 방식보다, 역할이 분리된 여러 에이전트를 오케스트레이션하는 방식에 가깝습니다.",
+    ],
+    "🛠️ 오픈소스 에이전트 프레임워크": [
+        "LangChain, LangGraph, AutoGen 계열처럼 에이전트의 상태, 도구 호출, 분기, 재시도 흐름을 구조화하려는 프레임워크 경쟁이 계속되고 있습니다.",
+        "실무에서는 단순 데모보다 상태 관리, 관찰 가능성, 평가 자동화, 실패 복구 흐름을 얼마나 안정적으로 제공하는지가 중요합니다.",
+        "프레임워크 선택 시에는 기능 수보다 팀의 개발 방식, 운영 환경, 로그 추적 체계와 잘 맞는지를 우선 확인해야 합니다.",
+    ],
+    "🏢 기업 업무 자동화 에이전트": [
+        "기업 업무 자동화 에이전트는 문서 검색 수준을 넘어 ERP, CRM, 그룹웨어, 데이터베이스, 승인 시스템과 연결되는 방향으로 확장되고 있습니다.",
+        "다만 실제 업무 시스템을 조작하는 순간 권한, 감사 로그, 승인 절차, 예외 처리 기준이 반드시 필요합니다.",
+        "업무 자동화 품질은 모델 성능만으로 결정되지 않고, 데이터 품질, 프로세스 정의, 운영 피드백 루프에 크게 좌우됩니다.",
+    ],
+    "🖥️ 자율형 웹/OS 브라우징 에이전트": [
+        "웹/OS 브라우징 에이전트는 API가 없는 화면 기반 업무를 처리할 수 있다는 장점이 있지만, UI 변경과 보안 정책에 취약할 수 있습니다.",
+        "사람처럼 화면을 보고 클릭하는 구조는 강력하지만, 기업 환경에서는 민감 정보 노출, 오작동, 권한 남용을 통제하는 장치가 필요합니다.",
+        "실무 적용 시에는 완전 자율보다는 사람 검토 단계가 포함된 반자동 흐름으로 시작하는 편이 안전합니다.",
+    ],
+}
 
-for item in news_repository:
-    is_category_valid = (category_filter == "전체 보기" or item["category"] == category_filter)
-    is_keyword_valid = (query_input.lower() in item["title"].lower() or 
-                        query_input.lower() in item["content"].lower() or
-                        query_input.lower() in item["insight"].lower())
-    
-    if is_category_valid and is_keyword_valid:
-        content_found = True
-        
-        # 개별 영역을 안전하게 묶어주는 순수 파이썬 컨테이너
-        with st.container():
-            st.caption(f"📌 {item['category']}  |  🌐 {item['source']}  |  🕒 {item['time']}")
-            st.markdown(f"### {item['title']}")
-            st.write(item['content'])
-            
-            # 현업 분석 인사이틀 상자 (st.success 상자로 스타일 이원화)
-            st.success(f"💡 현업 매니저 분석 : {item['insight']}")
-            
-            # 순수 단추 링크 연동 (절대 에러 없음)
-            st.link_button("🔗 출처 원문 보기", item["url"])
-            st.divider() # 하단 구분선
 
-if not content_found:
-    st.info("검색 조건에 맞는 동향 데이터가 존재하지 않습니다.")
+def now_kst_text():
+    return datetime.now(KST).strftime("%Y-%m-%d %H:%M")
+
+
+def normalize_text(value):
+    return str(value or "").casefold().strip()
+
+
+def contains_keyword(article, keyword):
+    keyword = normalize_text(keyword)
+
+    if not keyword:
+        return True
+
+    searchable_text = " ".join(
+        [
+            article.get("title", ""),
+            article.get("content", ""),
+            article.get("insight", ""),
+            article.get("source", ""),
+            " ".join(article.get("tags", [])),
+        ]
+    )
+
+    return keyword in normalize_text(searchable_text)
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def load_articles():
+    """
+    실제 크롤러가 있다면 이 함수만 교체하시면 됩니다.
+
+    권장 반환 구조:
+    [
+        {
+            "title": "...",
+            "category": "...",
+            "source": "...",
+            "published_at": "...",
+            "collected_at": "...",
+            "content": "...",
+            "insight": "...",
+            "url": "...",
+            "source_type": "공식 블로그 / 기술매체 / GitHub / 기타",
+            "verification": "확인 완료 / 확인 필요 / 샘플 데이터",
+            "tags": ["MCP", "Agent", "RAG"]
+        }
+    ]
+    """
+
+    collected_at = now_kst_text()
+
+    return [
+        {
+            "title": "LangChain 기반 멀티 에이전트 협업 워크플로우 동향",
+            "category": "🛠️ 오픈소스 에이전트 프레임워크",
+            "source": "LangChain Blog",
+            "published_at": "크롤러 입력값 필요",
+            "collected_at": collected_at,
+            "content": "역할이 분리된 여러 에이전트가 기획, 실행, 검증 단계를 나누어 처리하는 구조가 확산되고 있습니다.",
+            "insight": "PoC 단계에서는 멋진 데모보다 실패 시 재시도, 상태 추적, 로그 확인 구조가 더 중요합니다.",
+            "url": "https://www.langchain.com",
+            "source_type": "공식/벤더",
+            "verification": "샘플 데이터",
+            "tags": ["LangChain", "LangGraph", "Multi-Agent"],
+        },
+        {
+            "title": "기업 업무 자동화 에이전트의 ERP·CRM 연동 확대",
+            "category": "🏢 기업 업무 자동화 에이전트",
+            "source": "Enterprise AI Brief",
+            "published_at": "크롤러 입력값 필요",
+            "collected_at": collected_at,
+            "content": "기업용 에이전트는 문서 요약과 검색을 넘어 내부 시스템 조회, 데이터 검증, 업무 요청 생성까지 확장되는 흐름입니다.",
+            "insight": "업무 시스템을 직접 조작하려면 권한 통제, 승인 단계, 감사 로그가 설계에 포함되어야 합니다.",
+            "url": "https://example.com",
+            "source_type": "기술매체",
+            "verification": "샘플 데이터",
+            "tags": ["ERP", "CRM", "Workflow"],
+        },
+        {
+            "title": "화면 기반 웹·OS 조작 에이전트 적용 가능성",
+            "category": "🖥️ 자율형 웹/OS 브라우징 에이전트",
+            "source": "AI Automation Watch",
+            "published_at": "크롤러 입력값 필요",
+            "collected_at": collected_at,
+            "content": "API가 제공되지 않는 구형 시스템에서도 화면 인식과 클릭 제어를 통해 반복 업무를 처리하려는 시도가 늘고 있습니다.",
+            "insight": "초기 적용은 완전 자율보다 사람 확인 단계가 있는 반자동 방식이 더 안전합니다.",
+            "url": "https://example.com",
+            "source_type": "기술매체",
+            "verification": "샘플 데이터",
+            "tags": ["Computer Use", "Browser Agent", "RPA"],
+        },
+        {
+            "title": "AutoGen 계열 프레임워크의 에이전트 대화·실행 구조",
+            "category": "🛠️ 오픈소스 에이전트 프레임워크",
+            "source": "GitHub",
+            "published_at": "크롤러 입력값 필요",
+            "collected_at": collected_at,
+            "content": "여러 에이전트가 메시지를 주고받으며 문제를 분해하고, 필요한 경우 코드 실행이나 도구 호출을 연결하는 방식이 활용되고 있습니다.",
+            "insight": "실무형 에이전트는 대화 흐름보다 결과 검증, 도구 권한, 실행 제한이 더 중요합니다.",
+            "url": "https://github.com",
+            "source_type": "GitHub",
+            "verification": "샘플 데이터",
+            "tags": ["AutoGen", "Tool Use", "Orchestration"],
+        },
+        {
+            "title": "업무 에이전트 운영을 위한 평가·모니터링 필요성",
+            "category": "🏢 기업 업무 자동화 에이전트",
+            "source": "AI Governance Note",
+            "published_at": "크롤러 입력값 필요",
+            "collected_at": collected_at,
+            "content": "에이전트를 운영하려면 정답률뿐 아니라 실패 유형, 지연 시간, 재시도 횟수, 사용자 개입률을 함께 추적해야 합니다.",
+            "insight": "운영 대시보드가 없으면 PoC 이후 품질 개선 루프가 끊길 가능성이 큽니다.",
+            "url": "https://example.com",
+            "source_type": "분석/리포트",
+            "verification": "샘플 데이터",
+            "tags": ["Evaluation", "Monitoring", "Governance"],
+        },
+        {
+            "title": "웹 브라우징 에이전트의 보안 통제 이슈",
+            "category": "🖥️ 자율형 웹/OS 브라우징 에이전트",
+            "source": "Security Review",
+            "published_at": "크롤러 입력값 필요",
+            "collected_at": collected_at,
+            "content": "브라우저 조작형 에이전트는 계정, 쿠키, 내부 화면에 접근할 수 있어 민감 정보 통제와 실행 범위 제한이 필요합니다.",
+            "insight": "사내 적용 시에는 계정 분리, 허용 도메인 제한, 작업 로그 저장을 기본값으로 두는 편이 안전합니다.",
+            "url": "https://example.com",
+            "source_type": "보안/리스크",
+            "verification": "샘플 데이터",
+            "tags": ["Security", "Browser Agent", "Audit"],
+        },
+    ]
+
+
+def apply_filters(articles, query, selected_categories, verification_filter, source_type_filter):
+    filtered = []
+
+    for article in articles:
+        category_ok = article["category"] in selected_categories
+        keyword_ok = contains_keyword(article, query)
+
+        if verification_filter == "전체":
+            verification_ok = True
+        else:
+            verification_ok = article.get("verification") == verification_filter
+
+        if source_type_filter == "전체":
+            source_type_ok = True
+        else:
+            source_type_ok = article.get("source_type") == source_type_filter
+
+        if category_ok and keyword_ok and verification_ok and source_type_ok:
+            filtered.append(article)
+
+    return filtered
+
+
+def render_article_card(article, compact_mode):
+    with st.container(border=True):
+        meta_col, action_col = st.columns([4, 1])
+
+        with meta_col:
+            st.caption(
+                f"{article['category']}  ·  {article['source']}  ·  "
+                f"수집 {article['collected_at']}"
+            )
+            st.markdown(f"#### {article['title']}")
+
+        with action_col:
+            st.link_button("원문 보기", article["url"], width="stretch")
+
+        if compact_mode:
+            with st.expander("상세 내용 보기"):
+                st.write(article["content"])
+                st.info(f"현업 관점: {article['insight']}")
+        else:
+            st.write(article["content"])
+            st.info(f"현업 관점: {article['insight']}")
+
+        tag_text = " · ".join(article.get("tags", []))
+        st.caption(
+            f"출처 성격: {article.get('source_type', '미분류')}  |  "
+            f"검증 상태: {article.get('verification', '미확인')}  |  "
+            f"태그: {tag_text}"
+        )
+
+
+articles = load_articles()
+
+with st.sidebar:
+    st.markdown("### 검색 및 필터")
+
+    query_input = st.text_input(
+        "키워드 검색",
+        placeholder="예: MCP, AutoGen, RAG, ERP, Browser Agent",
+    )
+
+    selected_categories = st.multiselect(
+        "기술 분류",
+        options=CATEGORIES,
+        default=CATEGORIES,
+    )
+
+    verification_values = ["전체"] + sorted({item["verification"] for item in articles})
+    verification_filter = st.selectbox("검증 상태", verification_values)
+
+    source_type_values = ["전체"] + sorted({item["source_type"] for item in articles})
+    source_type_filter = st.selectbox("출처 성격", source_type_values)
+
+    sort_option = st.radio(
+        "정렬 기준",
+        ["수집 최신순", "출처명순", "제목순"],
+        horizontal=False,
+    )
+
+    compact_mode = st.checkbox("본문 접기", value=True)
+
+    st.divider()
+
+    if st.button("실시간 동기화", width="stretch"):
+        with st.spinner("크롤링 데이터를 동기화하는 중입니다."):
+            time.sleep(0.5)
+            st.cache_data.clear()
+        st.toast("동기화가 완료되었습니다.", icon="✅")
+        st.rerun()
+
+    st.caption("크롤러를 연결한 뒤에는 샘플 데이터 경고를 끄고 운영하시면 됩니다.")
+
+
+if not selected_categories:
+    selected_categories = CATEGORIES
+
+filtered_articles = apply_filters(
+    articles=articles,
+    query=query_input,
+    selected_categories=selected_categories,
+    verification_filter=verification_filter,
+    source_type_filter=source_type_filter,
+)
+
+if sort_option == "출처명순":
+    filtered_articles = sorted(filtered_articles, key=lambda x: x["source"])
+elif sort_option == "제목순":
+    filtered_articles = sorted(filtered_articles, key=lambda x: x["title"])
+else:
+    filtered_articles = list(filtered_articles)
+
+
+st.title("🧭 AI Agent Briefing")
+st.caption("AI Agent 기술 동향을 수집, 분류, 요약하는 브리핑 대시보드입니다.")
+
+if IS_SAMPLE_DATA:
+    st.warning(
+        "현재 화면은 샘플 데이터 기준입니다. 실제 서비스처럼 보이게 하려면 "
+        "load_articles() 함수에 크롤러 결과를 연결하고, verification 값을 실제 검증 상태로 바꾸세요."
+    )
+
+metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
+
+category_counter = Counter(item["category"] for item in filtered_articles)
+source_counter = Counter(item["source_type"] for item in filtered_articles)
+
+metric_col1.metric("노출 리포트", f"{len(filtered_articles)}건", border=True)
+metric_col2.metric("선택 분류", f"{len(selected_categories)}개", border=True)
+metric_col3.metric("출처 유형", f"{len(source_counter)}개", border=True)
+metric_col4.metric("마지막 갱신", now_kst_text(), border=True)
+
+st.divider()
+
+summary_tab, report_tab, data_tab = st.tabs(
+    ["핵심 요약", "상세 리포트", "수집 데이터"]
+)
+
+with summary_tab:
+    st.subheader("브리핑 요약")
+
+    if len(selected_categories) == len(CATEGORIES):
+        summary_key = CATEGORY_ALL
+        st.markdown(f"##### {CATEGORY_ALL}")
+        for sentence in SUMMARY_DATA[summary_key]:
+            st.write(f"• {sentence}")
+    else:
+        for category in selected_categories:
+            st.markdown(f"##### {category}")
+            for sentence in SUMMARY_DATA[category]:
+                st.write(f"• {sentence}")
+            st.write("")
+
+    st.info(
+        "운영용으로 전환할 때는 요약 문장도 고정 문구가 아니라, "
+        "수집된 기사 본문을 기준으로 별도 요약 함수에서 생성하도록 분리하는 편이 좋습니다."
+    )
+
+with report_tab:
+    st.subheader("상세 리포트")
+
+    if query_input:
+        st.caption(f"검색어: {query_input}")
+
+    if not filtered_articles:
+        st.info("현재 검색 조건에 맞는 리포트가 없습니다. 검색어 또는 필터를 조정해보세요.")
+    else:
+        for article in filtered_articles:
+            render_article_card(article, compact_mode=compact_mode)
+
+with data_tab:
+    st.subheader("수집 데이터 원본")
+
+    st.caption(
+        "운영 단계에서는 이 표를 관리자 확인용으로 남겨두면, "
+        "제목·출처·검증 상태·태그 오류를 빠르게 점검할 수 있습니다."
+    )
+
+    st.dataframe(
+        filtered_articles,
+        hide_index=True,
+        width="stretch",
+        column_order=[
+            "title",
+            "category",
+            "source",
+            "source_type",
+            "verification",
+            "published_at",
+            "collected_at",
+            "tags",
+            "url",
+        ],
+    )
