@@ -6,6 +6,7 @@ import streamlit as st
 
 
 KST = timezone(timedelta(hours=9))
+WEEKLY_CACHE_SECONDS = 604800
 
 
 st.set_page_config(
@@ -17,43 +18,19 @@ st.set_page_config(
 
 
 RSS_SOURCES = [
-    {
-        "name": "OpenAI",
-        "url": "https://openai.com/news/rss.xml",
-    },
-    {
-        "name": "Anthropic",
-        "url": "https://www.anthropic.com/news/rss.xml",
-    },
-    {
-        "name": "LangChain",
-        "url": "https://blog.langchain.com/rss/",
-    },
-    {
-        "name": "Microsoft AI",
-        "url": "https://blogs.microsoft.com/ai/feed/",
-    },
-    {
-        "name": "AWS Machine Learning",
-        "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
-    },
+    {"name": "OpenAI", "url": "https://openai.com/news/rss.xml"},
+    {"name": "Anthropic", "url": "https://www.anthropic.com/news/rss.xml"},
+    {"name": "LangChain", "url": "https://blog.langchain.com/rss/"},
+    {"name": "Microsoft AI", "url": "https://blogs.microsoft.com/ai/feed/"},
+    {"name": "AWS Machine Learning", "url": "https://aws.amazon.com/blogs/machine-learning/feed/"},
 ]
 
 
 TREND_SECTIONS = {
     "Agent Orchestration": {
         "keywords": [
-            "agent",
-            "agents",
-            "multi-agent",
-            "workflow",
-            "orchestration",
-            "langgraph",
-            "autogen",
-            "crewai",
-            "planner",
-            "executor",
-            "deep agents",
+            "agent", "agents", "multi-agent", "workflow", "orchestration",
+            "langgraph", "autogen", "crewai", "planner", "executor", "deep agents",
         ],
         "summary": "AI Agent는 단일 챗봇 구조에서 벗어나 여러 역할을 가진 에이전트가 협업하는 구조로 이동하고 있습니다.",
         "changes": [
@@ -69,16 +46,8 @@ TREND_SECTIONS = {
     },
     "MCP & Tool Calling": {
         "keywords": [
-            "mcp",
-            "model context protocol",
-            "tool",
-            "tools",
-            "function calling",
-            "api",
-            "connector",
-            "integration",
-            "server",
-            "tool use",
+            "mcp", "model context protocol", "tool", "tools", "function calling",
+            "api", "connector", "integration", "server", "tool use",
         ],
         "summary": "AI Agent의 실무 가치는 외부 시스템과 도구를 얼마나 안전하게 연결하느냐에 따라 결정되고 있습니다.",
         "changes": [
@@ -94,15 +63,8 @@ TREND_SECTIONS = {
     },
     "Memory & State Management": {
         "keywords": [
-            "memory",
-            "state",
-            "context",
-            "rag",
-            "retrieval",
-            "vector",
-            "knowledge graph",
-            "long-term",
-            "context engineering",
+            "memory", "state", "context", "rag", "retrieval", "vector",
+            "knowledge graph", "long-term", "context engineering",
         ],
         "summary": "AI Agent의 메모리는 단순 대화 기억이 아니라 업무 상태를 유지하는 구조로 확장되고 있습니다.",
         "changes": [
@@ -118,17 +80,8 @@ TREND_SECTIONS = {
     },
     "Agent Evaluation & AgentOps": {
         "keywords": [
-            "eval",
-            "evals",
-            "evaluation",
-            "benchmark",
-            "monitoring",
-            "observability",
-            "trace",
-            "tracing",
-            "safety",
-            "guardrail",
-            "langsmith",
+            "eval", "evals", "evaluation", "benchmark", "monitoring",
+            "observability", "trace", "tracing", "safety", "guardrail", "langsmith",
         ],
         "summary": "AI Agent 평가는 정답률보다 실행 과정의 품질과 실패 통제가 더 중요해지고 있습니다.",
         "changes": [
@@ -144,16 +97,8 @@ TREND_SECTIONS = {
     },
     "Enterprise Agent Architecture": {
         "keywords": [
-            "enterprise",
-            "business",
-            "automation",
-            "crm",
-            "erp",
-            "operation",
-            "productivity",
-            "salesforce",
-            "workflow automation",
-            "back office",
+            "enterprise", "business", "automation", "crm", "erp", "operation",
+            "productivity", "salesforce", "workflow automation", "back office",
         ],
         "summary": "기업형 AI Agent는 자동화 도구라기보다 통제 가능한 업무 위임 구조로 설계해야 합니다.",
         "changes": [
@@ -169,15 +114,8 @@ TREND_SECTIONS = {
     },
     "Computer Use & Browser Agent": {
         "keywords": [
-            "computer use",
-            "browser",
-            "web",
-            "desktop",
-            "screen",
-            "click",
-            "operator",
-            "rpa",
-            "ui automation",
+            "computer use", "browser", "web", "desktop", "screen", "click",
+            "operator", "rpa", "ui automation",
         ],
         "summary": "웹·OS 실행 Agent는 API가 없는 업무까지 자동화할 수 있지만, 보안과 통제 설계가 매우 중요합니다.",
         "changes": [
@@ -219,7 +157,7 @@ def match_categories(title, summary):
     return [category for category, _ in matched[:2]]
 
 
-@st.cache_data(ttl=86400, show_spinner=False)
+@st.cache_data(ttl=WEEKLY_CACHE_SECONDS, show_spinner=False)
 def collect_articles():
     collected_at = now_kst_text()
     articles_by_category = {category: [] for category in TREND_SECTIONS.keys()}
@@ -260,6 +198,95 @@ def collect_articles():
                     articles_by_category[category].append(article)
 
     return articles_by_category, raw_articles, collected_at
+
+
+def extract_dynamic_signal(category, articles):
+    config = TREND_SECTIONS[category]
+
+    if not articles:
+        return {
+            "level": "관찰 필요",
+            "article_count": 0,
+            "sources": [],
+            "keywords": [],
+            "latest_titles": [],
+        }
+
+    source_counts = {}
+    keyword_counts = {}
+
+    for article in articles:
+        source = article.get("source", "Unknown")
+        source_counts[source] = source_counts.get(source, 0) + 1
+
+        text = f"{article.get('title', '')} {article.get('summary', '')}".lower()
+
+        for keyword in config["keywords"]:
+            if keyword.lower() in text:
+                keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
+
+    top_sources = sorted(source_counts, key=source_counts.get, reverse=True)[:3]
+    top_keywords = sorted(keyword_counts, key=keyword_counts.get, reverse=True)[:5]
+    article_count = len(articles)
+
+    if article_count >= 4:
+        level = "강한 신호"
+    elif article_count >= 2:
+        level = "관찰 신호"
+    else:
+        level = "약한 신호"
+
+    latest_titles = [article["title"] for article in articles[:3]]
+
+    return {
+        "level": level,
+        "article_count": article_count,
+        "sources": top_sources,
+        "keywords": top_keywords,
+        "latest_titles": latest_titles,
+    }
+
+
+def make_dynamic_interpretation(category, signal):
+    if signal["article_count"] == 0:
+        return (
+            "이번 수집 기준으로 직접 매칭된 원문은 적습니다. "
+            "다만 이 영역은 AI Agent 아키텍처의 핵심 구성요소이므로 지속 관찰이 필요합니다."
+        )
+
+    source_text = ", ".join(signal["sources"]) if signal["sources"] else "주요 기술 소스"
+    keyword_text = ", ".join(signal["keywords"]) if signal["keywords"] else "관련 키워드"
+
+    return (
+        f"이번 수집 기준으로 {category} 영역에서 {signal['article_count']}건의 관련 원문이 확인되었습니다. "
+        f"주요 출처는 {source_text}이며, 반복적으로 확인된 키워드는 {keyword_text}입니다. "
+        "단일 기사 하나의 의미보다, 같은 기술 주제가 여러 출처에서 반복 등장하는지를 중심으로 보는 것이 좋습니다."
+    )
+
+
+def make_dynamic_action(category, signal):
+    if signal["article_count"] == 0:
+        return (
+            "이번 수집 기준으로는 직접적인 변화 신호가 약하므로, "
+            "기존 아키텍처 검토 항목으로 유지하면서 후속 원문 증가 여부를 관찰하는 것이 적합합니다."
+        )
+
+    if signal["level"] == "강한 신호":
+        return (
+            f"{category} 영역은 이번 수집 기준으로 반복 노출이 확인됩니다. "
+            "단순 관찰 대상이 아니라 PoC 후보 또는 내부 검토 과제로 올려볼 필요가 있습니다."
+        )
+
+    if signal["level"] == "관찰 신호":
+        return (
+            f"{category} 영역은 관심 신호가 확인됩니다. "
+            "관련 원문을 추가로 확인하고, 내부 업무 적용 가능성과 리스크 항목을 함께 정리하는 것이 좋습니다."
+        )
+
+    return (
+        f"{category} 영역은 아직 약한 신호 수준입니다. "
+        "기술 레이더에 등록하고, 같은 키워드가 반복 등장하는지 관찰하는 것이 적합합니다."
+    )
 
 
 def contains_keyword(category, keyword):
@@ -303,10 +330,12 @@ def render_executive_summary(selected_categories, articles_by_category):
     for category in selected_categories:
         config = TREND_SECTIONS[category]
         related_articles = articles_by_category.get(category, [])
+        signal = extract_dynamic_signal(category, related_articles)
 
         with st.container(border=True):
             st.markdown(f"##### {category}")
             st.write(config["summary"])
+            st.caption(f"최근 수집 신호: {signal['level']} · 관련 원문 {signal['article_count']}건")
 
             if related_articles:
                 st.caption("최근 수집 원문에서 관련 흐름이 확인된 영역입니다.")
@@ -329,11 +358,30 @@ def render_reference_articles(category, articles):
 
 def render_trend_card(category, articles):
     config = TREND_SECTIONS[category]
+    signal = extract_dynamic_signal(category, articles)
 
     with st.container(border=True):
         st.markdown(f"### {category}")
 
         st.write(config["summary"])
+
+        st.markdown("##### 최근 수집 신호")
+        st.write(f"• 관찰 강도: {signal['level']}")
+        st.write(f"• 관련 원문 수: {signal['article_count']}건")
+
+        if signal["sources"]:
+            st.write(f"• 주요 출처: {', '.join(signal['sources'])}")
+
+        if signal["keywords"]:
+            st.write(f"• 반복 키워드: {', '.join(signal['keywords'])}")
+
+        if signal["latest_titles"]:
+            st.markdown("##### 최근 참고 원문")
+            for title in signal["latest_titles"]:
+                st.write(f"• {title}")
+
+        st.markdown("##### 동적 해석")
+        st.write(make_dynamic_interpretation(category, signal))
 
         st.markdown("##### 주요 변화")
         for change in config["changes"]:
@@ -352,7 +400,7 @@ def render_trend_card(category, articles):
         st.write(config["risk"])
 
         st.markdown("##### 권장 액션")
-        st.info(config["action"])
+        st.info(make_dynamic_action(category, signal))
 
         render_reference_articles(category, articles)
 
@@ -377,11 +425,7 @@ def render_raw_articles(raw_articles):
             }
         )
 
-    st.dataframe(
-        rows,
-        hide_index=True,
-        use_container_width=True,
-    )
+    st.dataframe(rows, hide_index=True, use_container_width=True)
 
 
 articles_by_category, raw_articles, collected_at = collect_articles()
@@ -404,10 +448,10 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption("갱신 주기: 24시간")
+    st.caption("갱신 주기: 1주")
     st.caption("RSS 원문은 참고자료로만 사용하고, 화면은 기술 브리핑 형식으로 재구성합니다.")
 
-    if st.button("오늘 기준으로 다시 수집", use_container_width=True):
+    if st.button("최신 트렌드 다시 수집", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
 
@@ -421,7 +465,7 @@ filtered_categories = [
 
 
 st.title("AI Agent 기술 트렌드")
-st.caption(f"최근 수집: {collected_at} KST | 갱신 주기: 24시간")
+st.caption(f"최근 수집: {collected_at} KST | 갱신 주기: 1주")
 st.write(
     "AI Agent 관련 최신 원문을 참고자료로 수집하되, 화면은 뉴스 목록이 아니라 아키텍처, 기업 적용, 운영 통제 관점의 기술 브리핑으로 재구성합니다."
 )
