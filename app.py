@@ -27,6 +27,58 @@ RSS_SOURCES = [
 
 
 TREND_SECTIONS = {
+    "Loop Engineering": {
+        "keywords": [
+            "loop", "feedback loop", "reflection", "self-correction", "iteration",
+            "retry", "critic", "review", "human feedback", "closed loop",
+        ],
+        "summary": "Loop Engineering은 Agent가 실행 결과를 평가하고 다시 계획을 조정하는 반복 구조를 설계하는 영역입니다.",
+        "changes": [
+            "Agent가 한 번의 응답으로 끝나는 구조에서 벗어나 계획, 실행, 평가, 수정의 반복 루프를 갖추는 방향으로 발전하고 있습니다.",
+            "Reflection, Critic, Reviewer 역할을 별도로 두어 중간 결과를 검토하고 실패 시 재시도하거나 다른 도구를 선택하는 패턴이 늘고 있습니다.",
+            "사람 피드백을 루프 안에 넣어 자동화 수준을 단계적으로 높이고, 고위험 업무에서는 승인 기반 루프를 유지하는 설계가 중요해지고 있습니다.",
+            "루프별 품질 기준과 실패 원인을 기록해 다음 실행에서 더 나은 판단을 하도록 만드는 운영 설계가 중요해지고 있습니다.",
+            "비용과 지연 시간을 관리하기 위해 무한 반복을 막고, 루프 깊이와 재시도 전략을 업무 위험도에 맞게 조정하는 흐름이 강화되고 있습니다.",
+        ],
+        "meaning": "기술적으로는 Agent 품질을 모델 성능 하나에 맡기기보다, 실행 후 검증하고 다시 보정하는 운영 구조로 끌어올린다는 의미입니다.",
+        "architecture": "아키텍처 관점에서는 Plan, Execute, Evaluate, Revise, Escalate 단계를 명확히 분리해야 합니다. 각 루프에는 종료 조건, 재시도 한도, 실패 분류, 사람 개입 조건이 필요합니다.",
+        "enterprise": "기업 업무에서는 보고서 초안 작성, 코드 리뷰, 심사 보조, 고객 응대처럼 결과 검토가 필요한 업무에 적합합니다. 사람이 최종 책임을 갖되 반복 검토를 Agent가 보조하는 구조가 현실적입니다.",
+        "risk": "루프의 종료 조건이 없으면 불필요한 재시도와 비용 증가가 발생하고, 잘못된 평가 기준이 들어가면 오류를 더 강화할 수 있습니다.",
+        "action": "초기에는 최대 반복 횟수, 품질 기준, 사람 승인 조건을 먼저 정의하고 작은 업무 단위에서 루프 품질을 측정하는 것이 좋습니다.",
+        "checklist": [
+            "각 루프 단계의 입력, 출력, 책임을 분리했는가",
+            "재시도 한도와 종료 조건이 명확한가",
+            "사람 검토가 필요한 위험 구간을 정의했는가",
+            "실패 사유가 로그로 남고 다음 실행에 반영되는가",
+        ],
+        "maturity": "성숙도는 단순 재시도, 기준 기반 검토, 사람 피드백 반영, 자동 개선 루프 순서로 높아집니다.",
+    },
+    "LoopCraft": {
+        "keywords": [
+            "loopcraft", "loop craft", "prompt loop", "agent loop", "workflow design",
+            "iteration design", "task loop", "quality loop", "review loop",
+        ],
+        "summary": "LoopCraft는 반복형 Agent 워크플로우를 업무 목적에 맞게 조립하고 운영 가능한 형태로 다듬는 실무 설계 관점입니다.",
+        "changes": [
+            "Agent 워크플로우는 단순 자동화 흐름보다 업무별 반복 패턴을 세밀하게 조립하는 방향으로 고도화되고 있습니다.",
+            "자료 수집, 초안 작성, 검토, 보완, 승인처럼 반복이 필요한 업무에서 루프 단위를 재사용 가능한 템플릿으로 만드는 접근이 중요해지고 있습니다.",
+            "프롬프트, 도구, 검증 기준, 사람 승인 지점을 함께 설계해야 실제 운영에서 안정적인 결과를 만들 수 있습니다.",
+            "업무별 Loop Template을 축적해 반복 업무를 빠르게 설계하고, 조직 내 공통 운영 패턴으로 재사용하려는 흐름이 나타나고 있습니다.",
+            "템플릿 변경 이력과 성과 지표를 함께 관리해 어떤 루프 설계가 실제 업무 품질을 높였는지 추적하는 방식이 중요해지고 있습니다.",
+        ],
+        "meaning": "기술적으로는 Agent 루프를 즉흥적으로 연결하는 것이 아니라, 업무 목적과 품질 기준에 맞게 설계 자산으로 관리한다는 의미입니다.",
+        "architecture": "아키텍처 관점에서는 Loop Template, Role Prompt, Tool Policy, Quality Gate, Approval Step을 한 묶음으로 관리하는 구조가 필요합니다. 같은 루프를 여러 업무에 재사용하려면 입력 스키마와 산출물 형식도 표준화해야 합니다.",
+        "enterprise": "기업에서는 반복 보고, 시장 조사, 제안서 작성, 내부 검토 프로세스처럼 비슷한 절차가 반복되는 지식 업무에 적용하기 좋습니다.",
+        "risk": "업무 맥락을 반영하지 않은 범용 루프는 그럴듯한 산출물을 만들 수 있지만, 실제 의사결정 기준이나 승인 기준과 어긋날 수 있습니다.",
+        "action": "자주 반복되는 업무를 골라 Loop Template으로 정의하고, 산출물 기준과 승인 조건을 함께 문서화하는 것이 좋습니다.",
+        "checklist": [
+            "업무별 반복 패턴을 템플릿으로 분리했는가",
+            "프롬프트, 도구, 검증 기준을 하나의 운영 단위로 관리하는가",
+            "산출물 형식과 승인 기준이 표준화되어 있는가",
+            "템플릿 변경 이력과 성과 지표를 추적하는가",
+        ],
+        "maturity": "성숙도는 개별 루프 작성, 템플릿화, 업무별 재사용, 성과 기반 개선 순서로 높아집니다.",
+    },
     "Agent Orchestration": {
         "keywords": [
             "agent", "agents", "multi-agent", "workflow", "orchestration",
@@ -128,54 +180,6 @@ TREND_SECTIONS = {
         "enterprise": "API가 없는 구형 웹 시스템, 반복 입력 업무, 관리자 페이지 조회, 외부 사이트 정보 수집에는 활용 가능성이 있습니다.",
         "risk": "화면 기반 Agent는 사용자의 계정 권한으로 움직일 수 있기 때문에 잘못된 클릭, 민감 정보 노출, 외부 전송 위험이 있습니다.",
         "action": "초기에는 읽기 전용 업무나 테스트 환경에서 시작하고, 허용 URL, 전용 계정, 실행 로그, 사람 확인 단계를 반드시 두는 것이 안전합니다.",
-    },
-    "Loop Engineering": {
-        "keywords": [
-            "loop", "feedback loop", "reflection", "self-correction", "iteration",
-            "retry", "critic", "review", "human feedback", "closed loop",
-        ],
-        "summary": "Loop Engineering은 Agent가 실행 결과를 평가하고 다시 계획을 조정하는 반복 구조를 설계하는 영역입니다.",
-        "changes": [
-            "Agent가 한 번의 응답으로 끝나는 구조에서 벗어나 계획, 실행, 평가, 수정의 반복 루프를 갖추는 방향으로 발전하고 있습니다.",
-            "Reflection, Critic, Reviewer 역할을 별도로 두어 중간 결과를 검토하고 실패 시 재시도하거나 다른 도구를 선택하는 패턴이 늘고 있습니다.",
-            "사람 피드백을 루프 안에 넣어 자동화 수준을 단계적으로 높이고, 고위험 업무에서는 승인 기반 루프를 유지하는 설계가 중요해지고 있습니다.",
-        ],
-        "meaning": "기술적으로는 Agent 품질을 모델 성능 하나에 맡기기보다, 실행 후 검증하고 다시 보정하는 운영 구조로 끌어올린다는 의미입니다.",
-        "architecture": "아키텍처 관점에서는 Plan, Execute, Evaluate, Revise, Escalate 단계를 명확히 분리해야 합니다. 각 루프에는 종료 조건, 재시도 한도, 실패 분류, 사람 개입 조건이 필요합니다.",
-        "enterprise": "기업 업무에서는 보고서 초안 작성, 코드 리뷰, 심사 보조, 고객 응대처럼 결과 검토가 필요한 업무에 적합합니다. 사람이 최종 책임을 갖되 반복 검토를 Agent가 보조하는 구조가 현실적입니다.",
-        "risk": "루프의 종료 조건이 없으면 불필요한 재시도와 비용 증가가 발생하고, 잘못된 평가 기준이 들어가면 오류를 더 강화할 수 있습니다.",
-        "action": "초기에는 최대 반복 횟수, 품질 기준, 사람 승인 조건을 먼저 정의하고 작은 업무 단위에서 루프 품질을 측정하는 것이 좋습니다.",
-        "checklist": [
-            "각 루프 단계의 입력, 출력, 책임을 분리했는가",
-            "재시도 한도와 종료 조건이 명확한가",
-            "사람 검토가 필요한 위험 구간을 정의했는가",
-            "실패 사유가 로그로 남고 다음 실행에 반영되는가",
-        ],
-        "maturity": "성숙도는 단순 재시도, 기준 기반 검토, 사람 피드백 반영, 자동 개선 루프 순서로 높아집니다.",
-    },
-    "LoopCraft": {
-        "keywords": [
-            "loopcraft", "loop craft", "prompt loop", "agent loop", "workflow design",
-            "iteration design", "task loop", "quality loop", "review loop",
-        ],
-        "summary": "LoopCraft는 반복형 Agent 워크플로우를 업무 목적에 맞게 조립하고 운영 가능한 형태로 다듬는 실무 설계 관점입니다.",
-        "changes": [
-            "Agent 워크플로우는 단순 자동화 흐름보다 업무별 반복 패턴을 세밀하게 조립하는 방향으로 고도화되고 있습니다.",
-            "자료 수집, 초안 작성, 검토, 보완, 승인처럼 반복이 필요한 업무에서 루프 단위를 재사용 가능한 템플릿으로 만드는 접근이 중요해지고 있습니다.",
-            "프롬프트, 도구, 검증 기준, 사람 승인 지점을 함께 설계해야 실제 운영에서 안정적인 결과를 만들 수 있습니다.",
-        ],
-        "meaning": "기술적으로는 Agent 루프를 즉흥적으로 연결하는 것이 아니라, 업무 목적과 품질 기준에 맞게 설계 자산으로 관리한다는 의미입니다.",
-        "architecture": "아키텍처 관점에서는 Loop Template, Role Prompt, Tool Policy, Quality Gate, Approval Step을 한 묶음으로 관리하는 구조가 필요합니다. 같은 루프를 여러 업무에 재사용하려면 입력 스키마와 산출물 형식도 표준화해야 합니다.",
-        "enterprise": "기업에서는 반복 보고, 시장 조사, 제안서 작성, 내부 검토 프로세스처럼 비슷한 절차가 반복되는 지식 업무에 적용하기 좋습니다.",
-        "risk": "업무 맥락을 반영하지 않은 범용 루프는 그럴듯한 산출물을 만들 수 있지만, 실제 의사결정 기준이나 승인 기준과 어긋날 수 있습니다.",
-        "action": "자주 반복되는 업무를 골라 Loop Template으로 정의하고, 산출물 기준과 승인 조건을 함께 문서화하는 것이 좋습니다.",
-        "checklist": [
-            "업무별 반복 패턴을 템플릿으로 분리했는가",
-            "프롬프트, 도구, 검증 기준을 하나의 운영 단위로 관리하는가",
-            "산출물 형식과 승인 기준이 표준화되어 있는가",
-            "템플릿 변경 이력과 성과 지표를 추적하는가",
-        ],
-        "maturity": "성숙도는 개별 루프 작성, 템플릿화, 업무별 재사용, 성과 기반 개선 순서로 높아집니다.",
     },
 }
 
@@ -356,7 +360,7 @@ def render_executive_summary(selected_categories, articles_by_category):
 
     st.write(
         "AI Agent 기술은 단순 챗봇이나 뉴스성 AI 기능을 넘어, 업무 목표를 이해하고 도구를 호출하며 실행 결과를 검증하는 구조로 이동하고 있습니다. "
-        "핵심 변화는 Agent Orchestration, MCP & Tool Calling, Memory & State Management, Agent Evaluation, Enterprise Architecture, Computer Use, Loop Engineering, LoopCraft 영역에서 동시에 나타나고 있습니다."
+        "핵심 변화는 Loop Engineering, LoopCraft, Agent Orchestration, MCP & Tool Calling, Memory & State Management, Agent Evaluation, Enterprise Architecture, Computer Use 영역에서 동시에 나타나고 있습니다."
     )
 
     st.write(
